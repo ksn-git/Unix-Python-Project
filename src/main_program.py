@@ -24,7 +24,7 @@ fasta.load(fasta_file)
 fasta.verify("dnax")     
 
 # Opening the motif description file. Works if the file is in a "data" subfolder. 
-# check if file exist in helper_module 
+# check if file exist is in helper_module 
 motif_file = get_data_path('motif.fsa')     
 infile = open(motif_file,'r')
 
@@ -68,6 +68,37 @@ for line in infile:
             penalty_list.append(line.strip().split(sep="\t")[1])
 infile.close()
 
+#find motif
+#I think this should be added to the class...
+def find_motif(sequence,motif_list,penalty_list,max_deviation):
+    """Generator that yields a matching motif."""
+    #to avoid index error
+    print('placeholder for now')
+
+    ##psudocode
+    
+    # for seq in sequences
+        #reset mismatch score
+        #reset temp match 
+
+        # for each sequence position in seq (using sliding window)
+            #check if sequence position value is below deviation
+            # if temp match != '' and last postion in match is reached (x positions filled with not '*'?)
+                #save/yield? (temp match,position,mismatch score) to match list for the first entry
+                #reset mismatch score
+                #reset temp match
+            # if over deviation,
+                #move to next start position
+                #reset mismatch score
+                #reset temp match
+            # if below deviation,
+                #add possible mismatch value to mismatch score
+                #add position to temp match
+            #if match is in progress and skip position is reached (start to 15)
+                #add '*' to file and don't 
+    
+# need to find out how to jump back to last starting position. 
+# might be missing some conditions
 
 
 ## commented out for now 
