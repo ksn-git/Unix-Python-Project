@@ -19,7 +19,7 @@ def add_to_sys_path(relative_path_from_root: str):
     if target_path not in sys.path:
         sys.path.insert(0,target_path)
 
-#add file path ('data is hardcoded')
+#add file path ('data' is hardcoded)
 def get_data_path(filename):
     """Finds full data path in directory"""
 
