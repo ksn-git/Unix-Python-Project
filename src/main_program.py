@@ -8,6 +8,7 @@ if len(sys.argv) != 4:
     if len(sys.argv) == 1:
         motif = input("Please enter the name of the file with the motif to look for: ")
         fasta_file = input("Please enter the name of the fasta file to search in: ")
+        max_deviation = int(input("Please enter the maximum deviation (int): "))
     else:
         print("You must supply a file name with a motif to look for")
         print("Usage: <main_program.py> <motif> <fastafile> <max deviation>")
