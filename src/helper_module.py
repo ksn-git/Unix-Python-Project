@@ -15,7 +15,10 @@ def add_to_sys_path(relative_path_from_root: str):
     #get target path
     target_path = os.path.join(project_root,relative_path_from_root)
 
-    #add target_path if
+    #check if directory exist
+    if not os.path.isdir(target_path):
+        raise FileNotFoundError(f'The directory {target_path} does not exist.')
+    #add target_path if needed
     if target_path not in sys.path:
         sys.path.insert(0,target_path)
 
