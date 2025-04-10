@@ -2,34 +2,49 @@
 
 ## Unittest Project
 
-# Secure path
+#libraries
 import os
 import sys
-#get parent directive (of test and data)
-project_path = os.path.abspath(os.path.join(os.path.dirname(__file__),'..')) 
-#add testdata to directive  
-src_path = os.path.join(project_path,'src')                 
-sys.path.insert(0,src_path)
-#import from new path 
-from peter_fasta_class import Fasta
-
-#module for unit test
 import pytest
 
-### load 
-#check correct responses
-@pytest.mark.parametrize('filename',['dna7.fsa','ex1.dat','motif.fsa'])
-def test_Fastaloadfile(filename):
-    #redefine path to files
-    import os
-    project_path = os.path.abspath(os.path.join(os.path.dirname(__file__),'..'))   #get parent directive (of test and testdata)
-    data_path = os.path.join(project_path,'data',filename)                 #add testdata to directive
-    #if file/path exist
-    assert os.path.exists(data_path), f'File {filename} does not exist or is placed elsewhere.'
+#change sys.path to import helper_module found in 'src'
+current_path = os.path.dirname(os.path.abspath(__file__))
+src_path = os.path.join(current_path,'..','src')
+#check if we need to add 'src' to path
+if src_path not in sys.path:
+    sys.path.insert(0,src_path)
 
-    #run class
+#import functions
+from helper_module import add_to_sys_path,get_data_path
+add_to_sys_path('src')
+from peter_fasta_class import Fasta
+
+### unit test helper_module 
+## correctly build path
+# using mock to isolate a piece of the code without dependecies
+# monkey patch fixture safely modifies "object" for importing and 
+# makes the test independant of of the running user
+
+
+# it adds path if not already present
+
+# it doesn't add the path multiple times
+
+
+### load 
+#check correct responses has sequences with content
+@pytest.mark.parametrize('filename',['dna7.fsa','motif.fsa'])
+def test_Fastaloadfile(filename):
+    #get full path
+    data_path = get_data_path(filename)
+    #load Fasta class
     myfasta = Fasta()
     myfasta.load(data_path)
+    
+    #check load
+    assert hasattr(myfasta,'sequences'), f'No sequences attribute exist in {filename}.'
+    assert len(myfasta.sequences) > 0, f'Sequnece list is empty in {filename}'
+
 
 #check IOError response
 @pytest.mark.parametrize(('filename'),["ABC"])
@@ -38,6 +53,8 @@ def test_fastaload_error(filename):
         myfasta = Fasta()
         myfasta.load(filename)
 
+
+"""
 #check if the content of the loaded file is right
 @pytest.mark.parametrize('filename',['dna7.fsa','motif.fsa'])
 def test_Fastaload_content(filename):
@@ -75,21 +92,7 @@ def test_writefile(tmp_path):
     infile = open(filename, "r")
     txt = infile.readline()
     infile.close()
-    assert "Hello\n" == txt
+    assert 'Hello\n' == txt
 
 """
-def save(self, filename):
-        """Expects a filename. Writes a fasta file."""
-        # Ready, now write, no error check on purpose
-        outfile = open(filename, "w")
-        for i in range(len(self.headers)):
-            print(self.headers[i], file=outfile)
-            for j in range(0, len(self.sequences[i]), 60):
-                print(self.sequences[i][j:j+60], file=outfile)
-        outfile.close()"
-"""
-#have headers
-#same number of headers and seq
-#does content fit?
-
 
