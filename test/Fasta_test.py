@@ -25,10 +25,16 @@ from peter_fasta_class import Fasta
 # monkey patch fixture safely modifies "object" for importing and 
 # makes the test independant of of the running user
 
-
 # it adds path if not already present
 
 # it doesn't add the path multiple times
+
+#unittest if file exist
+def test_nonexisting_file():
+    with pytest.raises(Exception):
+        #get path
+        data_path = get_data_path('dn6.fsa')
+
 
 
 ### load 

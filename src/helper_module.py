@@ -27,8 +27,14 @@ def get_data_path(filename):
     current_file = os.path.abspath(__file__)
     #go back and look at project root
     project_root = os.path.dirname(os.path.dirname(current_file))
-    #return final path
-    return os.path.join(project_root, 'data', filename)
+    #return full path
+    full_path = os.path.join(project_root, 'data', filename)
+
+    #check if file exist
+    if not os.path.isfile(full_path):
+        raise FileNotFoundError(f'File {filename} does not exist at path {full_path}')
+    
+    return full_path
 
 
     
