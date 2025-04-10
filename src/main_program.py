@@ -67,6 +67,10 @@ for line in infile:
             penalty_list.append(line.strip().split(sep="\t")[1])
 infile.close()
 
+
+
+## commented out for now 
+'''
 def find_motif(sequence, motif_list, penalty_list, max_deviation):
     """ Generator that yields a result when a motif is found"""
 
@@ -116,6 +120,7 @@ def find_motif(sequence, motif_list, penalty_list, max_deviation):
                 start_pos_rf3.append(i)
 
 find_motif(fasta.sequences[0], motif_list, penalty_list, max_deviation)
+'''
 
 # Searching for the motif in each entry in the fasta file
 #for sequence in fasta.sequences:
