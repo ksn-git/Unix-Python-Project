@@ -23,8 +23,11 @@ def add_to_sys_path(relative_path_from_root: str):
 def get_data_path(filename):
     """Finds full data path in directory"""
 
+    #find current path
     current_file = os.path.abspath(__file__)
+    #go back and look at project root
     project_root = os.path.dirname(os.path.dirname(current_file))
+    #return final path
     return os.path.join(project_root, 'data', filename)
 
 
