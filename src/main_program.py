@@ -1,6 +1,7 @@
 
 import sys, re, os
 from peter_fasta_class import Fasta
+from helper_module import get_data_path
 
 # Getting filename with motif from command line
 if len(sys.argv) != 4:                              
@@ -22,13 +23,9 @@ fasta.load(fasta_file)
 fasta.verify("dnax")     
 
 # Opening the motif description file. Works if the file is in a "data" subfolder. 
-try:
-    project_path = os.path.abspath(os.path.join(os.path.dirname(__file__),'..'))        # path to unix_python_project folder
-    data_path = os.path.join(project_path,'data',motif)                              # path to whatever file to import from data folder
-    infile = open(data_path, 'r')
-except IOError:
-    print(f"Could not open file {motif}")
-    sys.exit(1)
+# check if file exist in helper_module 
+motif_file = get_data_path('motif.fsa')     
+infile = open(motif_file,'r')
 
 # Arranging motif into two lists
 # Motif list:   ATCGGATC******AGTCGTTA
