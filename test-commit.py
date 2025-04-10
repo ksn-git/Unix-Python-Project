@@ -19,3 +19,4 @@ print("yippie")
 #3) stage din commit ved plus tegn
 #4) skriv en comment hvad du har gjort
 #5) commit
+#6) sync changes 
