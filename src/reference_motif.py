@@ -66,10 +66,6 @@ print("Gap:", gap)
 print("Motif 2:", m2)
 print("Penalty 2:", p2)
 """
-#unittest needs: what if no gap, no motif after, no motif before,
-# no penalty score, no file, totally wrong file type, gap wrong way around
-
-#detect bp and mismatch score found with unittest
 
 
 
