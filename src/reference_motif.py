@@ -2,8 +2,7 @@
 
 ### add reference_motif function
 
-import sys, re, os
-from peter_fasta_class import Fasta
+import re
 from helper_module import get_data_path
 
 def reference_motif_TATAAT(filename):
@@ -59,7 +58,7 @@ def reference_motif_TATAAT(filename):
 
 """
 #check
-m1,p1,gap,m2,p2 = reference_motif('reference.txt')
+m1,p1,gap,m2,p2 = reference_motif_TATAAT('reference.txt')
 
 print("Motif 1:", m1)
 print("Penalty 1:", p1)
