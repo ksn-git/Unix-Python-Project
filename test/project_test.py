@@ -36,6 +36,15 @@ def test_nonexisting_file():
         data_path = get_data_path('dn6.fsa')
 
 
+### unittest reference_motif_TATAAT function
+
+#
+
+
+
+
+
+
 
 ### load 
 #check correct responses has sequences with content
