@@ -72,7 +72,7 @@ for line in infile:
         motif_list.append(line.strip().split(sep="\t")[0])
         penalty_list.append(line.strip().split(sep="\t")[1])
 infile.close()
-print(motif_list,penalty_list)
+
     ##psudocode
     
     # for seq in sequences
@@ -111,46 +111,45 @@ def find_motif(sequence, motif_list, penalty_list, max_deviation):
         star_index = None
 
     # Start searching for matches
-    for i in range(0, len(sequence) - len(motif_list)):             # Search until the remaining seq is not long enough to be the motif
-        window = sequence[i:(i + len(motif_list) + maximum - 1)]    # Window of the same length as the longest possible motif. Len = 29
+    for i in range(0, len(sequence) - len(motif_list) - maximum + 1):           # Search until the remaining seq is not long enough to be the motif
+        window = sequence[i:(i + len(motif_list) + maximum - 1)]                # Window of the same length as the longest possible motif. Len = 29
         deviation = 0
         for j in range(len(window)):
               
             # If gap has been reached 
-            # check deviation for 15 gaps, 16 gaps, 17 gaps. Save deviation
-            # Choose gaps corresponding to lowest deviation
-            # Continue searching for match after chosen gap size
+            # Check match for all gap sizes. Yield if below max deviation
 
             # skip min amount of starts, then min +1 ... up to max amount of starts
             # motif list should have one star 
-            # while motif life is still long enough, check if equal to window
+            # while motif list is still long enough, check if equal to window
 
-            # OBS: Motif is currently 29. But j + m(max) = 29, so index error
-            # For gap = 17, k = 17, m = 17-23, j = 6. these are human indices/lengths, not python indices! Change this in code
+            # For gap = 17: k = 17, m = [17-23], j = 6. these are human indices/lengths, not python indices! Change this in code
             # If the motif contains a gap / star and it has been reached
             if j == star_index:
                 # Range of gaps 
                 for k in range(minimum, maximum + 1): # range should be the length of the 2nd part of the motif
                     # check match for the length of the 2nd part of the motif
-                    for m in range(k, k+len_part_2):
+                    for m in range(k, k+len_part_2 - 1):
                         # If several possible characters
-                        if isinstance(motif_list[j+m], set):
-                            if window[j+m] not in motif_list[j+m]:
-                                deviation += int(penalty_list[j])
+                        if isinstance(motif_list[j+m-k+1], set):    
+                            if window[j+m] not in motif_list[j+m-k+1]:  
+                                deviation += int(penalty_list[j+m-k+1]) 
                                 if deviation > max_deviation:
                                     break
-                        # If one possible character
+                        # If one possible character 
                         else: 
-                            if window[j+m] != motif_list[j+m]:
-                                deviation += int(penalty_list[j])
+                            if window[j+m] != motif_list[j+m-k+1]:    
+                                deviation += int(penalty_list[j+m-k+1])  
                                 # If the deviation is larger than the max, break out of the loop
                                 if deviation > max_deviation:
                                     break
-                    if deviation <= max_deviation:
-                        yield((i, deviation, window))
 
-            # If several possible characters
-            if isinstance(motif_list[j], set):
+            # If gap has been reached, the entire window has already been checked
+            elif star_index is not None and j >= star_index:
+                # Skip this part if the star/gap has already been encountered
+                continue
+
+            elif isinstance(motif_list[j], set):
                 # If the character is not in the list of possible characters, add penalty score
                 if window[j] not in motif_list[j]:
                     deviation += int(penalty_list[j])
@@ -170,8 +169,13 @@ def find_motif(sequence, motif_list, penalty_list, max_deviation):
         if deviation <= max_deviation:
             yield((i, deviation, window))                           # Return the position, deviation and match
 
-# for sequence in fasta.sequences:
-for match in find_motif(fasta.sequences[-5], motif_list, penalty_list, max_deviation):
-    print(match)
+print("Matches are listed as (start position, penalty score, match)")
+print("The header corresponding to the match is printed immediately before the match")
+for header, sequence in fasta:
+    for match in find_motif(sequence, motif_list, penalty_list, max_deviation):
+        print(header)
+        print(match)
 
+#for match in find_motif(fasta.sequences[1], motif_list, penalty_list, max_deviation):
+#        print(match)
 
