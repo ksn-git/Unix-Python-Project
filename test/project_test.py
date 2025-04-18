@@ -123,27 +123,36 @@ def test_writefile(tmp_path):
 from main_program import find_motif
 
 #Basic Functionality Test
-def test_basic_sequence():
+def test_find_motif_basic():
     sequence = 'CGCCTATAATAAT'
-    motif = 'TATAAT'
+    motif = ['T','A','T','A','A','T']
     penalty = [8,8,6,6,5,8]
     max_deviation = 0
     result = list(find_motif(sequence,motif,penalty,max_deviation))
     assert result == [(4,0,'TATAAT')]
 
 #functionality test with gap
-def test_motif_with_gap():
+def test_find_motif_with_gap():
     sequence = 'ATCGGACCCACTAGT'
-    motif = 'ATCGGA***AGTCGT'
+    motif = ['A','T','C','G','G','A','*','*','*','A','G','T','C','G','T']
     penalty = [8,7,6,7,8,9,0,0,0,8,7,6,9,8,4] 
     max_deviation = 18
     result = list(find_motif(sequence,motif,penalty,max_deviation))
     assert result == [(0,16,'ATCGGACCCACTAGT')]
 
+#with multiple available bp
+def test_find_motif_multiple_bp():
+    sequence = 'CGCCTATAATAAT'
+    motif = ['T','A','T','A','AT','T']
+    penalty = [8,8,6,6,5,8]
+    max_deviation = 0
+    result = list(find_motif(sequence,motif,penalty,max_deviation))
+    assert result == [(4,0,'TATAAT')]
+
 #Penalty Application Test (need testing)
-def test_penalty():
+def test_find_motif_penalty():
     sequence = 'CGCCTATCATTATCCT'
-    motif = 'TATAAT'
+    motif = ['T','A','T','A','A','T']
     penalty = [8,8,6,6,5,8]
     max_deviation = 8
     result = list(find_motif(sequence,motif,penalty,max_deviation))
@@ -153,7 +162,7 @@ def test_penalty():
 #empty sequence
 def test_find_motif_empty_sequence():
     sequence = ''
-    motif = 'TATAAT'
+    motif = ['T','A','T','A','A','T']
     penalty = [8,8,6,6,5,8]
     max_deviation = 0
     result = list(find_motif(sequence,motif,penalty,max_deviation))
@@ -162,7 +171,7 @@ def test_find_motif_empty_sequence():
 #empty motif and penalty
 def test_find_motif_empty_motif_and_penalty():
     sequence = 'CGCCTATAATAAT'
-    motif = ''
+    motif = []
     penalty = []
     max_deviation = 0
     result = list(find_motif(sequence,motif,penalty,max_deviation))
@@ -171,9 +180,12 @@ def test_find_motif_empty_motif_and_penalty():
 #empty penalty score
 def test_find_motif_empty_motif_and_penalty():
     sequence = 'CGCCTATAATAAT'
-    motif = 'TATAAT'
+    motif = ['T','A','T','A','A','T']
     penalty = []
     max_deviation = 0
     result = list(find_motif(sequence,motif,penalty,max_deviation))
     assert result == []
+
+#unknown character
+
 
