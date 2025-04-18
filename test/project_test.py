@@ -133,15 +133,12 @@ def test_basic_sequence():
 
 #Penalty Application Test (need testing)
 def test_penalty():
-    sequence = 'CGCCTATACT'
+    sequence = 'CGCCTATCATTATCCT'
     motif = 'TATAAT'
     penalty = [8,8,6,6,5,8]
     max_deviation = 8
     result = list(find_motif(sequence,motif,penalty,max_deviation))
     assert result == [(4,8,'TATACT')]
-
-#Max Deviation Test
-
 
 #Edge Case Test
 
