@@ -61,11 +61,12 @@ for line in infile:
             else:
                 raise ValueError("Invalid unimportant positions format")
                 sys.exit(1)
-    # Lines with >1 possible base 
+    # Lines with >1 possible character 
     elif len(line.strip().split(sep="\t")[0]) > 1:
-        motif_list.append(list()) 
-        for base in line.strip().split(sep="\t")[0]:
-            motif_list[].append(base)
+        multiple_chars = set()
+        for char in line.strip().split(sep="\t")[0]:
+            multiple_chars.add(char)
+        motif_list.append(multiple_chars)
         penalty_list.append(line.strip().split(sep="\t")[1])
     # Lines specifying important positions   
     else:
@@ -108,13 +109,22 @@ def find_motif(sequence, motif_list, penalty_list, max_deviation):
         window = sequence[i:i + len(motif_list)]                    # Window of the same length as the motif
         deviation = 0
         for j in range(len(window)):
-            # If the window is not equal to the motif, add penalty score
-            if window[j] != motif_list[j]:
-                deviation += int(penalty_list[j])
-                # If the deviation is larger than the max, break out of the loop
-                if deviation > max_deviation:
-                    break
-        # If the deviation is less than the max, print the match
+            # If several possible characters
+            if isinstance(motif_list[j], set):
+                # If the character is not in the list of possible characters, add penalty score
+                if window[j] not in motif_list[j]:
+                    deviation += int(penalty_list[j])
+                    # If the deviation is larger than the max, break out of the loop
+                    if deviation > max_deviation:
+                        break                  
+            # If one possible character
+            else:
+                if window[j] != motif_list[j]:
+                    deviation += int(penalty_list[j])
+                    # If the deviation is larger than the max, break out of the loop
+                    if deviation > max_deviation:
+                        break
+        # If the deviation is less than the max, yield the match
         if deviation <= max_deviation:
             yield((i, deviation, window))                           # Return the position, deviation and match
 
