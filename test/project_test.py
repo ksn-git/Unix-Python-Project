@@ -131,7 +131,7 @@ def test_basic_sequence():
     result = list(find_motif(sequence,motif,penalty,max_deviation))
     assert result == [(4,0,'TATAAT')]
 
-#functionality test
+#functionality test with gap
 def test_motif_with_gap():
     sequence = 'ATCGGACCCACTAGT'
     motif = 'ATCGGA***AGTCGT'
