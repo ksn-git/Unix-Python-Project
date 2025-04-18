@@ -19,27 +19,37 @@ from helper_module import add_to_sys_path,get_data_path
 add_to_sys_path('src')
 
 ### unit test helper_module 
-## correctly build path
+## correctly build sys.path
 # using mock to isolate a piece of the code without dependecies
-# monkey patch fixture safely modifies "object" for importing and 
 # makes the test independant of of the running user
 
+#create temporary enviroment
 from unittest.mock import patch
-#function in isolation
 @patch('os.path.abspath')   #replace with mock object while testing
 @patch('os.path.isdir')     #same as above
+
+#test if it works
 def test_sys_to_path_function(mock_isdir,mock_abspath,tmp_path):
     #temp dir
-    temp_dir = tmp_path / "examle_dir"
+    temp_dir = tmp_path / "example_dir"
     temp_dir.mkdir()
 
     #mock filepath in temp_dir
     mock_abspath.return_value = str(temp_dir / 'example_file.py')
+    mock_isdir.return_value = True
 
     relative_path = 'example_dir'
     expected_path = str(temp_dir)
+
     add_to_sys_path(relative_path)
     assert expected_path in sys.path
+
+## Notes and explanation for test_sys_to_path_function
+#mock_isdir replaces os.path.isdir in test. If True 
+# ensures function is good if directory exists.
+#moch_abspath replaces os.path.abspath in test.  
+# Ensures function is good if example_file is is temp_dir.
+#tmp_path creates temporary dir
 
 #ensure directory exist
 
