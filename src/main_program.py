@@ -70,7 +70,7 @@ infile.close()
 
 #find motif
 #I think this should be added to the class...
-def find_motif(sequence,motif_list,penalty_list,max_deviation):
+def find_motif_x(sequence,motif_list,penalty_list,max_deviation):
     """Generator that yields a matching motif."""
     #to avoid index error
     print('placeholder for now')
