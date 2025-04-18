@@ -25,9 +25,13 @@ from peter_fasta_class import Fasta
 # monkey patch fixture safely modifies "object" for importing and 
 # makes the test independant of of the running user
 
-# it adds path if not already present
+#function in isolation
 
-# it doesn't add the path multiple times
+#ensure directory exist
+
+#avoid path duplication 
+
+#edge cases
 
 #unittest if file exist
 def test_nonexisting_file():
