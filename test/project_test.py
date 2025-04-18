@@ -140,5 +140,31 @@ def test_penalty():
     result = list(find_motif(sequence,motif,penalty,max_deviation))
     assert result == [(4,8,'TATACT')]
 
-#Edge Case Test
+## Edge Case Test
+#empty sequence
+def test_find_motif_empty_sequence():
+    sequence = ''
+    motif = 'TATAAT'
+    penalty = [8,8,6,6,5,8]
+    max_deviation = 0
+    result = list(find_motif(sequence,motif,penalty,max_deviation))
+    assert result == []
+
+#empty motif and penalty
+def test_find_motif_empty_motif_and_penalty():
+    sequence = 'CGCCTATAATAAT'
+    motif = ''
+    penalty = []
+    max_deviation = 0
+    result = list(find_motif(sequence,motif,penalty,max_deviation))
+    assert result == []
+
+#empty penalty score
+def test_find_motif_empty_motif_and_penalty():
+    sequence = 'CGCCTATAATAAT'
+    motif = 'TATAAT'
+    penalty = []
+    max_deviation = 0
+    result = list(find_motif(sequence,motif,penalty,max_deviation))
+    assert result == []
 
