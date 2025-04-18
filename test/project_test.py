@@ -31,33 +31,42 @@ def mock_os_functions():
     with patch('os.path.abspath') as mock_abspath, patch('os.path.isdir') as mock_isdir:
         yield mock_abspath, mock_isdir
 
-#test if it works
-def test_sys_to_path_function(mock_os_functions,tmp_path):
-    mock_abspath, mock_isdir = mock_os_functions
-    
-    #temp dir
-    temp_dir = tmp_path / "example_dir"
-    temp_dir.mkdir()
-
-    #mock filepath in temp_dir
-    mock_abspath.return_value = str(temp_dir / 'example_file.py')
-    mock_isdir.return_value = True
-
-    relative_path = 'example_dir'
-    expected_path = str(temp_dir)
-
-    add_to_sys_path(relative_path)
-    assert expected_path in sys.path
-
-## Notes and explanation for test_sys_to_path_function
+## Notes and explanation for fixture and mock tests
 #mock_isdir replaces os.path.isdir in test. If True 
 # ensures function is good if directory exists.
 #moch_abspath replaces os.path.abspath in test.  
 # Ensures function is good if example_file is is temp_dir.
 #tmp_path creates temporary dir
 
-#if directory does not exist
+#test if sys_to_path works
+def test_sys_to_path_function(mock_os_functions,tmp_path):
+    mock_abspath, mock_isdir = mock_os_functions
+    
+    #create temp dir
+    temp_dir = tmp_path / "example_dir"
+    temp_dir.mkdir()
+    #mock filepath in temp_dir
+    mock_abspath.return_value = str(temp_dir / 'example_file.py')
+    mock_isdir.return_value = True
 
+    #set path and test
+    relative_path = 'example_dir'
+    expected_path = str(temp_dir)
+    add_to_sys_path(relative_path)
+    assert expected_path in sys.path
+
+#if directory does not exist
+def test_dir_not_exist(mock_os_functions):
+    mock_abspath, mock_isdir = mock_os_functions
+
+    #generate non-existing dir and set path
+    mock_abspath.return_value = '/project_root/example_file.py'     #set mocked os.path.abspath 
+    mock_isdir.return_value = False                                 #simulates dir does not exist
+    relative_path = 'non_existent_dir'
+
+    #test error
+    with pytest.raises(FileNotFoundError):
+        add_to_sys_path(relative_path)
 
 #avoid path duplication 
 
