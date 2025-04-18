@@ -25,7 +25,7 @@ fasta.verify("dnax")
 
 # Opening the motif description file. Works if the file is in a "data" subfolder. 
 # check if file exist is in helper_module 
-motif_file = get_data_path('motif.fsa')     #this is the fasta file, I've added a reference file     
+motif_file = get_data_path(motif)     #this is the fasta file, I've added a reference file     
 infile = open(motif_file,'r')
 
 # Arranging motif into two lists
@@ -68,13 +68,6 @@ for line in infile:
             penalty_list.append(line.strip().split(sep="\t")[1])
 infile.close()
 
-#find motif
-#I think this should be added to the class...
-def find_motif(sequence,motif_list,penalty_list,max_deviation):
-    """Generator that yields a matching motif."""
-    #to avoid index error
-    print('placeholder for now')
-
     ##psudocode
     
     # for seq in sequences
@@ -100,8 +93,6 @@ def find_motif(sequence,motif_list,penalty_list,max_deviation):
 # need to find out how to jump back to last starting position. 
 # might be missing some conditions
 
-
- 
 def find_motif(sequence, motif_list, penalty_list, max_deviation):
     """ Generator that searches for motif """
     """ Yields position, deviation and sequence when a match is found """
@@ -110,7 +101,6 @@ def find_motif(sequence, motif_list, penalty_list, max_deviation):
     # OBS: ONLY WORKS WHEN EACH POSITION HAS ONE POSSIBLE LETTER
     for i in range(0, len(sequence) - len(motif_list)):             # Search until the remaining seq is not long enough to be the motif
         window = sequence[i:i + len(motif_list)]                    # Window of the same length as the motif
-        print(window)
         deviation = 0
         for j in range(len(window)):
             # If the window is not equal to the motif, add penalty score
@@ -121,13 +111,10 @@ def find_motif(sequence, motif_list, penalty_list, max_deviation):
                     break
         # If the deviation is less than the max, print the match
         if deviation <= max_deviation:
-            yield((i, deviation, window))         # Return the position, deviation and match
+            yield((i, deviation, window))                           # Return the position, deviation and match
 
-find_motif(fasta.sequences[0], motif_list, penalty_list, max_deviation)
-
-# Searching for the motif in each entry in the fasta file
-#for sequence in fasta.sequences:
-#    find_motif(motif_list, penalty_list, sequence, max_deviation)
-
+# for sequence in fasta.sequences:
+for match in find_motif(fasta.sequences[0], motif_list, penalty_list, max_deviation):
+    print(match)
 
 
