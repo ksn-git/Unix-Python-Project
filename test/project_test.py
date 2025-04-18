@@ -119,3 +119,23 @@ def test_writefile(tmp_path):
 
 """
 
+### find motif generator
+from main_program import find_motif
+
+#Basic Functionality Test
+def test_basic_sequence():
+    sequence = 'CGCCTATAATAAT'
+    motif = 'TATAAT'
+    penalty = [8,8,6,6,5,8]
+    max_deviation = 0
+    result = list(find_motif(sequence,motif,penalty,max_deviation))
+    assert result == [(4,0,'TATAAT')]
+
+#Penalty Application Test
+
+
+#Max Deviation Test
+
+
+#Edge Case Test
+
