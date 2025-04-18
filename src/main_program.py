@@ -37,37 +37,42 @@ for line in infile:
     # Skip descriptive lines
     if line.startswith("#"):
         continue
-    else:
-        # Line specifying unimportant positions
-        if line.startswith("*"):
-            unimportant_positions = line.strip().split(sep="\t")[1]
-            # If there is a defined number of unimportant positions
-            try:
-                unimportant_positions = int(unimportant_positions)
-                for i in range(0, unimportant_positions):
+    # Line specifying unimportant positions
+    elif line.startswith("*"):
+        unimportant_positions = line.strip().split(sep="\t")[1]
+        # If there is a defined number of unimportant positions
+        try:
+            unimportant_positions = int(unimportant_positions)
+            for i in range(0, unimportant_positions):
+                motif_list.append("*")
+                penalty_list.append(0)
+                continue 
+        except ValueError:
+            pass                
+        # If there is a range of unimportant positions
+        if isinstance(unimportant_positions, str):
+            result = re.search(r"(\d+)-(\d+)", unimportant_positions)
+            if result is not None:
+                minimum = int(result.group(1))
+                maximum = int(result.group(2))
+                for i in range(0, minimum):
                     motif_list.append("*")
                     penalty_list.append(0)
-                    continue 
-            except ValueError:
-                pass                
-            # If there is a range of unimportant positions
-            if isinstance(unimportant_positions, str):
-                result = re.search(r"(\d+)-(\d+)", unimportant_positions)
-                if result is not None:
-                    minimum = int(result.group(1))
-                    maximum = int(result.group(2))
-                    for i in range(0, minimum):
-                        motif_list.append("*")
-                        penalty_list.append(0)
-                else:
-                    raise ValueError("Invalid unimportant positions format")
-                    sys.exit(1)
-        # Lines specifying important positions
-        else:
-            motif_list.append(line.strip().split(sep="\t")[0])
-            penalty_list.append(line.strip().split(sep="\t")[1])
+            else:
+                raise ValueError("Invalid unimportant positions format")
+                sys.exit(1)
+    # Lines with >1 possible base 
+    elif len(line.strip().split(sep="\t")[0]) > 1:
+        motif_list.append(list()) 
+        for base in line.strip().split(sep="\t")[0]:
+            motif_list[].append(base)
+        penalty_list.append(line.strip().split(sep="\t")[1])
+    # Lines specifying important positions   
+    else:
+        motif_list.append(line.strip().split(sep="\t")[0])
+        penalty_list.append(line.strip().split(sep="\t")[1])
 infile.close()
-
+print(motif_list,penalty_list)
     ##psudocode
     
     # for seq in sequences
@@ -114,7 +119,7 @@ def find_motif(sequence, motif_list, penalty_list, max_deviation):
             yield((i, deviation, window))                           # Return the position, deviation and match
 
 # for sequence in fasta.sequences:
-for match in find_motif(fasta.sequences[0], motif_list, penalty_list, max_deviation):
+for match in find_motif(fasta.sequences[-5], motif_list, penalty_list, max_deviation):
     print(match)
 
 
