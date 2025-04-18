@@ -23,13 +23,18 @@ add_to_sys_path('src')
 # using mock to isolate a piece of the code without dependecies
 # makes the test independant of of the running user
 
-#create temporary enviroment
+#apply fixture with patches
+#replaces os with mock object while testing
 from unittest.mock import patch
-@patch('os.path.abspath')   #replace with mock object while testing
-@patch('os.path.isdir')     #same as above
+@pytest.fixture
+def mock_os_functions():
+    with patch('os.path.abspath') as mock_abspath, patch('os.path.isdir') as mock_isdir:
+        yield mock_abspath, mock_isdir
 
 #test if it works
-def test_sys_to_path_function(mock_isdir,mock_abspath,tmp_path):
+def test_sys_to_path_function(mock_os_functions,tmp_path):
+    mock_abspath, mock_isdir = mock_os_functions
+    
     #temp dir
     temp_dir = tmp_path / "example_dir"
     temp_dir.mkdir()
@@ -51,7 +56,8 @@ def test_sys_to_path_function(mock_isdir,mock_abspath,tmp_path):
 # Ensures function is good if example_file is is temp_dir.
 #tmp_path creates temporary dir
 
-#ensure directory exist
+#if directory does not exist
+
 
 #avoid path duplication 
 
