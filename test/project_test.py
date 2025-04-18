@@ -17,15 +17,14 @@ if src_path not in sys.path:
 #import functions
 from helper_module import add_to_sys_path,get_data_path
 add_to_sys_path('src')
-from peter_fasta_class import Fasta
 
 ### unit test helper_module 
 ## correctly build path
 # using mock to isolate a piece of the code without dependecies
 # monkey patch fixture safely modifies "object" for importing and 
 # makes the test independant of of the running user
-from unittest.mock import patch
 
+from unittest.mock import patch
 #function in isolation
 @patch('os.path.abspath')   #replace with mock object while testing
 @patch('os.path.isdir')     #same as above
@@ -60,7 +59,7 @@ from reference_motif import reference_motif_TATAAT
 
 def test_missing_penalty():
     with pytest.raises(ValueError):
-        m1,p1,gap,m2,p2 = reference_motif_TATAAT('missing_penalty_reference.txt')
+        m1,p1,gap,m2,p2 = reference_motif_TATAAT('missing_penalty_motif.txt')
 
 
 #unittest needs: what if no gap, no motif after, no motif before,
