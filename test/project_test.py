@@ -17,17 +17,60 @@ if src_path not in sys.path:
 #import functions
 from helper_module import add_to_sys_path,get_data_path
 add_to_sys_path('src')
-from peter_fasta_class import Fasta
 
 ### unit test helper_module 
-## correctly build path
+## correctly build sys.path
 # using mock to isolate a piece of the code without dependecies
-# monkey patch fixture safely modifies "object" for importing and 
 # makes the test independant of of the running user
 
-# it adds path if not already present
+#apply fixture with patches
+#replaces os with mock object while testing
+from unittest.mock import patch
+@pytest.fixture
+def mock_os_functions():
+    with patch('os.path.abspath') as mock_abspath, patch('os.path.isdir') as mock_isdir:
+        yield mock_abspath, mock_isdir
 
-# it doesn't add the path multiple times
+## Notes and explanation for fixture and mock tests
+#mock_isdir replaces os.path.isdir in test. If True 
+# ensures function is good if directory exists.
+#moch_abspath replaces os.path.abspath in test.  
+# Ensures function is good if example_file is is temp_dir.
+#tmp_path creates temporary dir
+
+#test if sys_to_path works
+def test_sys_to_path_function(mock_os_functions,tmp_path):
+    mock_abspath, mock_isdir = mock_os_functions
+    
+    #create temp dir
+    temp_dir = tmp_path / "example_dir"
+    temp_dir.mkdir()
+    #mock filepath in temp_dir
+    mock_abspath.return_value = str(temp_dir / 'example_file.py')
+    mock_isdir.return_value = True
+
+    #set path and test
+    relative_path = 'example_dir'
+    expected_path = str(temp_dir)
+    add_to_sys_path(relative_path)
+    assert expected_path in sys.path
+
+#if directory does not exist
+def test_dir_not_exist(mock_os_functions):
+    mock_abspath, mock_isdir = mock_os_functions
+
+    #generate non-existing dir and set path
+    mock_abspath.return_value = '/project_root/example_file.py'     #set mocked os.path.abspath 
+    mock_isdir.return_value = False                                 #simulates dir does not exist
+    relative_path = 'non_existent_dir'
+
+    #test error
+    with pytest.raises(FileNotFoundError):
+        add_to_sys_path(relative_path)
+
+#avoid path duplication 
+
+#edge cases
 
 #unittest if file exist
 def test_nonexisting_file():
@@ -41,109 +84,47 @@ from reference_motif import reference_motif_TATAAT
 
 def test_missing_penalty():
     with pytest.raises(ValueError):
-        m1,p1,gap,m2,p2 = reference_motif_TATAAT('missing_penalty_reference.txt')
+        m1,p1,gap,m2,p2 = reference_motif_TATAAT('missing_penalty_motif.txt')
 
 
 #unittest needs: what if no gap, no motif after, no motif before,
 # no penalty score, no file, totally wrong file type, gap wrong way around
 
-
-
-
-
-
-
-
-### load 
-#check correct responses has sequences with content
-@pytest.mark.parametrize('filename',['dna7.fsa','motif.fsa'])
-def test_Fastaloadfile(filename):
-    #get full path
-    data_path = get_data_path(filename)
-    #load Fasta class
-    myfasta = Fasta()
-    myfasta.load(data_path)
-    
-    #check load
-    assert hasattr(myfasta,'sequences'), f'No sequences attribute exist in {filename}.'
-    assert len(myfasta.sequences) > 0, f'Sequnece list is empty in {filename}'
-
-
-#check IOError response
-@pytest.mark.parametrize(('filename'),["ABC"])
-def test_fastaload_error(filename):
-    with pytest.raises(IOError):
-        myfasta = Fasta()
-        myfasta.load(filename)
-
-
 """
-#check if the content of the loaded file is right
-@pytest.mark.parametrize('filename',['dna7.fsa','motif.fsa'])
-def test_Fastaload_content(filename):
-    #redefine path to files
-    import os
-    project_path = os.path.abspath(os.path.join(os.path.dirname(__file__),'..'))   #get parent directive (of test and testdata)
-    data_path = os.path.join(project_path,'data',filename)                 #add testdata to directive
-    #if file/path exist
-    assert os.path.exists(data_path), f'File {filename} does not exist or is placed elsewhere.'
-
-    #run class
-    myfasta = Fasta()
-    myfasta.load(data_path)
-
-    #check if headers and sequences exist
-    assert len(myfasta.headers) > 0, 'FASTA files needs headers'
-    #check if sequences are dna sequences
-    dna = {'A','T','C','G','N'}                 #include unknown base N
-    for i,seq in enumerate(myfasta.sequences):
-        assert set(seq.upper()).issubset(dna), 'Characters outside of DNA was found in the sequences'
-    #length comparison (doesn't do anything for now)
-    #assert len(myfasta.headers) == len(myfasta.sequences), 'There must be an equal amout of headers and sequences.'
-
-#load needs a more strict check of the sequences (class or when using the sequence)
-# test checks for it -> add to function
-
-
-### save 
-#save temp file
-def test_writefile(tmp_path):
-    filename = tmp_path / "myfile"
-    outfile = open(filename, "w")
-    print('Hello', file=outfile)
-    outfile.close()
-    infile = open(filename, "r")
-    txt = infile.readline()
-    infile.close()
-    assert 'Hello\n' == txt
-
-"""
-
 ### find motif generator
 from main_program import find_motif
 
 #Basic Functionality Test
-def test_basic_sequence():
+def test_find_motif_basic():
     sequence = 'CGCCTATAATAAT'
-    motif = 'TATAAT'
+    motif = ['T','A','T','A','A','T']
     penalty = [8,8,6,6,5,8]
     max_deviation = 0
     result = list(find_motif(sequence,motif,penalty,max_deviation))
     assert result == [(4,0,'TATAAT')]
 
-#functionality test
-def test_motif_with_gap():
+#functionality test with gap
+def test_find_motif_with_gap():
     sequence = 'ATCGGACCCACTAGT'
-    motif = 'ATCGGA***AGTCGT'
+    motif = ['A','T','C','G','G','A','*','*','*','A','G','T','C','G','T']
     penalty = [8,7,6,7,8,9,0,0,0,8,7,6,9,8,4] 
     max_deviation = 18
     result = list(find_motif(sequence,motif,penalty,max_deviation))
     assert result == [(0,16,'ATCGGACCCACTAGT')]
 
+#with multiple available bp
+def test_find_motif_multiple_bp():
+    sequence = 'CGCCTATAATAAT'
+    motif = ['T','A','T','A','AT','T']
+    penalty = [8,8,6,6,5,8]
+    max_deviation = 0
+    result = list(find_motif(sequence,motif,penalty,max_deviation))
+    assert result == [(4,0,'TATAAT')]
+
 #Penalty Application Test (need testing)
-def test_penalty():
+def test_find_motif_penalty():
     sequence = 'CGCCTATCATTATCCT'
-    motif = 'TATAAT'
+    motif = ['T','A','T','A','A','T']
     penalty = [8,8,6,6,5,8]
     max_deviation = 8
     result = list(find_motif(sequence,motif,penalty,max_deviation))
@@ -153,7 +134,7 @@ def test_penalty():
 #empty sequence
 def test_find_motif_empty_sequence():
     sequence = ''
-    motif = 'TATAAT'
+    motif = ['T','A','T','A','A','T']
     penalty = [8,8,6,6,5,8]
     max_deviation = 0
     result = list(find_motif(sequence,motif,penalty,max_deviation))
@@ -162,7 +143,7 @@ def test_find_motif_empty_sequence():
 #empty motif and penalty
 def test_find_motif_empty_motif_and_penalty():
     sequence = 'CGCCTATAATAAT'
-    motif = ''
+    motif = []
     penalty = []
     max_deviation = 0
     result = list(find_motif(sequence,motif,penalty,max_deviation))
@@ -171,9 +152,13 @@ def test_find_motif_empty_motif_and_penalty():
 #empty penalty score
 def test_find_motif_empty_motif_and_penalty():
     sequence = 'CGCCTATAATAAT'
-    motif = 'TATAAT'
+    motif = ['T','A','T','A','A','T']
     penalty = []
     max_deviation = 0
     result = list(find_motif(sequence,motif,penalty,max_deviation))
     assert result == []
 
+#ensure fasta file
+#meet another star
+
+"""
