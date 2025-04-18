@@ -131,11 +131,49 @@ def test_basic_sequence():
     result = list(find_motif(sequence,motif,penalty,max_deviation))
     assert result == [(4,0,'TATAAT')]
 
-#Penalty Application Test
+#functionality test
+def test_motif_with_gap():
+    sequence = 'ATCGGACCCACTAGT'
+    motif = 'ATCGGA***AGTCGT'
+    penalty = [8,7,6,7,8,9,0,0,0,8,7,6,9,8,4] 
+    max_deviation = 18
+    result = list(find_motif(sequence,motif,penalty,max_deviation))
+    assert result == [(0,16,'ATCGGACCCACTAGT')]
 
+#Penalty Application Test (need testing)
+def test_penalty():
+    sequence = 'CGCCTATCATTATCCT'
+    motif = 'TATAAT'
+    penalty = [8,8,6,6,5,8]
+    max_deviation = 8
+    result = list(find_motif(sequence,motif,penalty,max_deviation))
+    assert result == [(4,8,'TATCAT')]
 
-#Max Deviation Test
+## Edge Case Test
+#empty sequence
+def test_find_motif_empty_sequence():
+    sequence = ''
+    motif = 'TATAAT'
+    penalty = [8,8,6,6,5,8]
+    max_deviation = 0
+    result = list(find_motif(sequence,motif,penalty,max_deviation))
+    assert result == []
 
+#empty motif and penalty
+def test_find_motif_empty_motif_and_penalty():
+    sequence = 'CGCCTATAATAAT'
+    motif = ''
+    penalty = []
+    max_deviation = 0
+    result = list(find_motif(sequence,motif,penalty,max_deviation))
+    assert result == []
 
-#Edge Case Test
+#empty penalty score
+def test_find_motif_empty_motif_and_penalty():
+    sequence = 'CGCCTATAATAAT'
+    motif = 'TATAAT'
+    penalty = []
+    max_deviation = 0
+    result = list(find_motif(sequence,motif,penalty,max_deviation))
+    assert result == []
 
