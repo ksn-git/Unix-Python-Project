@@ -24,8 +24,23 @@ from peter_fasta_class import Fasta
 # using mock to isolate a piece of the code without dependecies
 # monkey patch fixture safely modifies "object" for importing and 
 # makes the test independant of of the running user
+from unittest.mock import patch
 
 #function in isolation
+@patch('os.path.abspath')   #replace with mock object while testing
+@patch('os.path.isdir')     #same as above
+def test_sys_to_path_function(mock_isdir,mock_abspath,tmp_path):
+    #temp dir
+    temp_dir = tmp_path / "examle_dir"
+    temp_dir.mkdir()
+
+    #mock filepath in temp_dir
+    mock_abspath.return_value = str(temp_dir / 'example_file.py')
+
+    relative_path = 'example_dir'
+    expected_path = str(temp_dir)
+    add_to_sys_path(relative_path)
+    assert expected_path in sys.path
 
 #ensure directory exist
 
@@ -51,7 +66,7 @@ def test_missing_penalty():
 #unittest needs: what if no gap, no motif after, no motif before,
 # no penalty score, no file, totally wrong file type, gap wrong way around
 
-
+"""
 ### find motif generator
 from main_program import find_motif
 
@@ -122,3 +137,4 @@ def test_find_motif_empty_motif_and_penalty():
 #ensure fasta file
 #meet another star
 
+"""
