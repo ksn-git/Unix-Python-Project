@@ -186,6 +186,6 @@ def test_find_motif_empty_motif_and_penalty():
     result = list(find_motif(sequence,motif,penalty,max_deviation))
     assert result == []
 
-#unknown character
-
+#ensure fasta file
+#meet another star
 
