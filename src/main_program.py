@@ -101,61 +101,33 @@ def find_motif(sequence,motif_list,penalty_list,max_deviation):
 # might be missing some conditions
 
 
-## commented out for now 
-'''
+ 
 def find_motif(sequence, motif_list, penalty_list, max_deviation):
-    """ Generator that yields a result when a motif is found"""
-
-    # Make a set for each reading frame. Elements of 3 bases from motif. 
-    reading_frame1 = list()
-    reading_frame2 = list()
-    reading_frame3 = list()
+    """ Generator that searches for motif """
+    """ Yields position, deviation and sequence when a match is found """
+    """ Tries to make a match in each window until max deviation is reached """
 
     # OBS: ONLY WORKS WHEN EACH POSITION HAS ONE POSSIBLE LETTER
-    for i in range(0, len(motif_list) - 2):
-        codon = str(motif_list[i] + str(motif_list[i + 1]) + str(motif_list[i + 2]))
-
-        # Include codons with *. This will make tracking codon position easier later.
-        # Reading frame 1
-        if i % 3 == 0:
-            reading_frame1.append(codon)
-        # Reading frame 2
-        if (i + 2) % 3 == 0:
-            reading_frame2.append(codon)
-        # Reading frame 3
-        if (i + 1) % 3 == 0:
-            reading_frame3.append(codon)
-
-    # Sliding window of 3 bases through the sequence. Looking for codons in the reading frames.
-    pos_in_rf1_list = list()
-    pos_in_rf2_list = list() 
-    pos_in_rf3_list = list()      
-    start_pos_rf1 = list()
-    start_pos_rf2 = list()
-    start_pos_rf3 = list()
-    for i in range(0, len(sequence) - 2):
-        window = sequence[i:i + 3]
-        # Reading frame 1
-        if i % 3 == 0:
-            if window in reading_frame1:
-                pos_in_rf1_list.append(reading_frame1.index(window))     # Which # codon in the reading frame was it? 
-                start_pos_rf1.append(i)                                  # Where in the sequence was it found?
-        # Reading frame 2
-        if (i + 2) % 3 == 0:
-            if window in reading_frame2:
-                pos_in_rf2_list.append(reading_frame2.index(window))     
-                start_pos_rf2.append(i)
-        # Reading frame 3
-        if (i + 1) % 3 == 0:
-            if window in reading_frame3:
-                pos_in_rf3_list.append(reading_frame3.index(window))     
-                start_pos_rf3.append(i)
+    for i in range(0, len(sequence) - len(motif_list)):             # Search until the remaining seq is not long enough to be the motif
+        window = sequence[i:i + len(motif_list)]                    # Window of the same length as the motif
+        print(window)
+        deviation = 0
+        for j in range(len(window)):
+            # If the window is not equal to the motif, add penalty score
+            if window[j] != motif_list[j]:
+                deviation += int(penalty_list[j])
+                # If the deviation is larger than the max, break out of the loop
+                if deviation > max_deviation:
+                    break
+        # If the deviation is less than the max, print the match
+        if deviation <= max_deviation:
+            yield((i, deviation, window))         # Return the position, deviation and match
 
 find_motif(fasta.sequences[0], motif_list, penalty_list, max_deviation)
-'''
 
 # Searching for the motif in each entry in the fasta file
 #for sequence in fasta.sequences:
 #    find_motif(motif_list, penalty_list, sequence, max_deviation)
+
 
 
