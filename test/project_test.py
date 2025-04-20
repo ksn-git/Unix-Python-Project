@@ -16,7 +16,6 @@ if src_path not in sys.path:
 
 #import functions
 from helper_module import add_to_sys_path,get_data_path
-add_to_sys_path('src')
 
 ### unit test helper_module 
 ## correctly build sys.path
@@ -24,13 +23,19 @@ add_to_sys_path('src')
 # sometimes uses tmp_path to create an actual temporary directive to test interactions
 # makes the test independant of of the running user
 
-#apply fixture with patches
-#replaces os with mock object while testing
+#apply fixture with patch
+#mock os.path.isdir is true 
 from unittest.mock import patch
 @pytest.fixture
-def mock_os_functions():
-    with patch('os.path.abspath') as mock_abspath, patch('os.path.isdir') as mock_isdir:
-        yield mock_abspath, mock_isdir
+def mock_isdir_true():
+    with patch('os.path.isdir',return_value = True) as mock_isdir:
+        yield mock_isdir
+
+#os.path.isdir false
+@pytest.fixture
+def mock_isdir_true():
+    with patch('os.path.isdir',return_value = True) as mock_isdir:
+        yield mock_isdir
 
 ## Notes and explanation for fixture and mock tests
 #mock_isdir replaces os.path.isdir in test. If True 
@@ -41,14 +46,20 @@ def mock_os_functions():
 
 #test if sys_to_path works and doesn't duplicate path
 def test_sys_to_path_function(mock_os_functions,tmp_path):
-    mock_abspath, mock_isdir = mock_os_functions
     
     #create tmp_path to provide an actual tmp_dir to interact with
     temp_dir = tmp_path / "example_dir"
     temp_dir.mkdir()
+
     #mock filepath in temp_dir
-    mock_abspath.return_value = str(temp_dir / 'example_file.py')
+    mock_abspath, mock_isdir = mock_os_functions
+    mock_abspath.return_value = str(temp_dir)
     mock_isdir.return_value = True
+
+    # Print mock return values for debugging
+    print(f"Mock abspath return value: {mock_abspath.return_value}")
+    print(f"Mock isdir return value: {mock_isdir.return_value}")
+
 
     #set path
     relative_path = 'example_dir'
@@ -68,7 +79,7 @@ def test_dir_not_exist(mock_os_functions):
     mock_abspath, mock_isdir = mock_os_functions
 
     #generate non-existing dir and set path
-    mock_abspath.return_value = '/project_root/example_file.py'     #set mocked os.path.abspath 
+    mock_abspath.return_value = '/project_root/non_existent_dir'     #set mocked os.path.abspath 
     mock_isdir.return_value = False                                 #simulates dir does not exist
     relative_path = 'non_existent_dir'
 
