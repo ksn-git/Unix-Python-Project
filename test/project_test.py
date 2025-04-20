@@ -97,8 +97,7 @@ def create_temp_data_file(tmp_path):
         return file_path
     return _create
 
-
-#get correct path
+#test correct path
 def test_get_correct_data_path(create_temp_data_file):
     #create temp file
     filename = 'testfile.txt'
@@ -108,10 +107,18 @@ def test_get_correct_data_path(create_temp_data_file):
     with patch('os.path.abspath',return_value = str(temp_file_path)):
         assert get_data_path(filename) == str(temp_file_path)
 
-#file does not exist
-#def test_get_data_path_file_not_found():
+#test file does not exist
+def test_get_data_path_file_not_found(tmp_path):
+    #don't create file
+    filename = 'testfile.txt'
+
+    #mock system from temp_file_path
+    with patch('os.path.abspath',return_value = str(tmp_path / 'non_existing_file.py')):
+        with pytest.raises(FileNotFoundError) as err:
+            get_data_path(filename)
 
 
+  
 ### unittest reference_motif_TATAAT function
 from reference_motif import reference_motif_TATAAT
 
