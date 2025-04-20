@@ -60,7 +60,7 @@ def test_sys_to_path_function(mock_os_functions,tmp_path):
 
     #add second path to check if it duplicates path
     add_to_sys_path(relative_path)
-    sys.path.appent(expected_path) == 1
+    assert sys.path.count(expected_path) == 1
 
 
 #if directory does not exist
