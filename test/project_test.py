@@ -112,7 +112,7 @@ def test_get_data_path_file_not_found(tmp_path):
 #unittest needs: what if no gap, no motif after, no motif before,
 # no penalty score, no file, totally wrong file type, gap wrong way around
 
-"""
+
 ### find motif generator
 from main_program import find_motif
 
@@ -183,4 +183,3 @@ def test_find_motif_empty_motif_and_penalty():
 #ensure fasta file
 #meet another star
 
-"""
