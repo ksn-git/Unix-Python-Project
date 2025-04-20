@@ -38,22 +38,29 @@ def mock_os_functions():
 # Ensures function is good if example_file is is temp_dir.
 #tmp_path creates temporary dir
 
-#test if sys_to_path works
+#test if sys_to_path works and doesn't duplicate path
 def test_sys_to_path_function(mock_os_functions,tmp_path):
     mock_abspath, mock_isdir = mock_os_functions
     
-    #create temp dir
+    #create tmp_path to provide an actual tmp_dir to interact with
     temp_dir = tmp_path / "example_dir"
     temp_dir.mkdir()
     #mock filepath in temp_dir
     mock_abspath.return_value = str(temp_dir / 'example_file.py')
     mock_isdir.return_value = True
 
-    #set path and test
+    #set path
     relative_path = 'example_dir'
     expected_path = str(temp_dir)
+    
+    #add first path to check if work
     add_to_sys_path(relative_path)
     assert expected_path in sys.path
+
+    #add second path to check if it duplicates path
+    add_to_sys_path(relative_path)
+    sys.path.appent(expected_path) == 1
+
 
 #if directory does not exist
 def test_dir_not_exist(mock_os_functions):
@@ -68,7 +75,6 @@ def test_dir_not_exist(mock_os_functions):
     with pytest.raises(FileNotFoundError):
         add_to_sys_path(relative_path)
 
-#avoid path duplication 
 
 #edge cases
 
