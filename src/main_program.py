@@ -73,30 +73,6 @@ for line in infile:
         penalty_list.append(line.strip().split(sep="\t")[1])
 infile.close()
 
-    ##psudocode
-    
-    # for seq in sequences
-        #reset mismatch score
-        #reset temp match 
-
-        # for each sequence position in seq (using sliding window)
-            #check if sequence position value is below deviation
-            # if temp match != '' and last postion in match is reached (x positions filled with not '*'?)
-                #save/yield? (temp match,position,mismatch score) to match list for the first entry
-                #reset mismatch score
-                #reset temp match
-            # if over deviation,
-                #move to next start position
-                #reset mismatch score
-                #reset temp match
-            # if below deviation,
-                #add possible mismatch value to mismatch score
-                #add position to temp match
-            #if match is in progress and skip position is reached (start to 15)
-                #add '*' to file and don't 
-    
-# need to find out how to jump back to last starting position. 
-# might be missing some conditions
 
 def find_motif(sequence, motif_list, penalty_list, max_deviation):
     """ Generator that searches for motif """
