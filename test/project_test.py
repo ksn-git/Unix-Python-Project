@@ -6,6 +6,7 @@
 import os
 import sys
 import pytest
+from unittest.mock import patch
 
 #change sys.path to import helper_module found in 'src'
 current_path = os.path.dirname(os.path.abspath(__file__))
@@ -17,15 +18,13 @@ if src_path not in sys.path:
 #import functions
 from helper_module import add_to_sys_path,get_data_path
 
-### unit test helper_module 
-## correctly build sys.path
+### test sys_to_path from helper_module 
 # using mock to isolate a piece of the code without dependecies
 # sometimes uses tmp_path to create an actual temporary directive to test interactions
 # makes the test independant of of the running user
-
 #apply fixture with patch
+
 #mock os.path.isdir is true 
-from unittest.mock import patch
 @pytest.fixture
 def mock_isdir_true():
     with patch('os.path.isdir',return_value = True) as mock_isdir:
@@ -51,7 +50,7 @@ def test_sys_to_path_function(tmp_path,mock_isdir_true):
     temp_dir = tmp_path / "example_dir"
     temp_dir.mkdir()
 
-    #mock abspath after tmp_path creation to fake file in temp_dir
+    #mock system after tmp_path creation to fake file in temp_dir
     with patch('os.path.abspath',return_value = str(temp_dir / 'fake_file.py')):
         #set path
         relative_path = 'example_dir'
@@ -77,12 +76,37 @@ def test_dir_not_exist(mock_isdir_false):
 #check if an empty path is handled correctly
 # by raising an exception or ignoring input
 def test_sys_path_empty(mock_isdir_true):
-    #mock abspath 
+    #mock system from fake file 
     with patch('os.path.abspath',return_value = '/project_root'):             
         #tests if raises exception without relative_path
         with pytest.raises(ValueError):
             add_to_sys_path('')
 
+### test get_data_path from helper_module
+# uses fixtures from sys_to_path tests and new fixture to create temp file
+
+#creates a factory function (_create) inside fixture to create new temp files
+@pytest.fixture
+def create_temp_data_file(tmp_path):
+    #create internal/magic function 
+    def _create(filename,content = 'test content'):
+        data_dir = tmp_path / 'data'
+        data_dir.mkdir(exist_ok = True) #TODO add comment
+        file_path = data_dir / filename
+        file_path.write_text(content)
+        return file_path
+    return _create
+
+
+#get correct path
+def test_get_correct_data_path(tmp_path,create_temp_data_file):
+    #create temp file
+    filename = 'testfile.txt'
+    temp_file_path = create_temp_data_file(filename)
+
+    #mock system from temp_file_path
+    with patch('os.path.abspath',return_value = str(temp_file_path)):
+        assert get_data_path(filename) == str(temp_file_path)
 
 #unittest if file exist
 def test_nonexisting_file():
