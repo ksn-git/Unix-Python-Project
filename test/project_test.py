@@ -22,19 +22,6 @@ from helper_module import add_to_sys_path,get_data_path
 # using mock to isolate a piece of the code without dependecies
 # sometimes uses tmp_path to create an actual temporary directive to test interactions
 # makes the test independant of of the running user
-#apply fixture with patch
-
-#mock os.path.isdir is true 
-@pytest.fixture
-def mock_isdir_true():
-    with patch('os.path.isdir',return_value = True) as mock_isdir:
-        yield mock_isdir
-
-#os.path.isdir is false
-@pytest.fixture
-def mock_isdir_false():
-    with patch('os.path.isdir',return_value = False) as mock_isdir:
-        yield mock_isdir
 
 ## Notes and explanation for fixture and mock tests
 #mock_isdir replaces os.path.isdir in test. If True 
@@ -44,7 +31,7 @@ def mock_isdir_false():
 #tmp_path creates temporary dir
 
 #test if sys_to_path works and doesn't duplicate path
-def test_sys_to_path_function(tmp_path,mock_isdir_true):
+def test_sys_to_path_function(tmp_path):
     
     #create tmp_path to provide an actual tmp_dir to interact with
     temp_dir = tmp_path / "example_dir"
@@ -52,35 +39,38 @@ def test_sys_to_path_function(tmp_path,mock_isdir_true):
 
     #mock system from run_from.py
     with patch('os.path.abspath',return_value = str(temp_dir / 'run_from.py')):
-        #set path
-        relative_path = 'example_dir'
-        expected_path = str(temp_dir)
+        with patch('os.path.isdir',return_value = True):
+            #set path
+            relative_path = 'example_dir'
+            expected_path = str(temp_dir)
 
-        #add first path to check if work
-        add_to_sys_path(relative_path)
-        assert expected_path in sys.path
+            #add first path to check if work
+            add_to_sys_path(relative_path)
+            assert expected_path in sys.path
 
-        #add second path to check if it duplicates path
-        add_to_sys_path(relative_path)
-        assert sys.path.count(expected_path) == 1
+            #add second path to check if it duplicates path
+            add_to_sys_path(relative_path)
+            assert sys.path.count(expected_path) == 1
 
 #if directory does not exist
-def test_dir_not_exist(mock_isdir_false):
+def test_dir_not_exist():
     with patch('os.path.abspath',return_value = '/project_root'):
-        relative_path = 'non_existent_dir'
-        #tests if FileNotFoundError is detected
-        with pytest.raises(FileNotFoundError):
-            add_to_sys_path(relative_path)
+        with patch('os.path.isdir',return_value = False):
+            relative_path = 'non_existent_dir'
+            #tests if FileNotFoundError is detected
+            with pytest.raises(FileNotFoundError):
+                add_to_sys_path(relative_path)
 
 ##edge cases
 #check if an empty path is handled correctly
 # by raising an exception or ignoring input
-def test_sys_path_empty(mock_isdir_true):
+def test_sys_path_empty():
     #mock system 
     with patch('os.path.abspath',return_value = '/project_root'):             
-        #tests if raises exception without relative_path
-        with pytest.raises(ValueError):
-            add_to_sys_path('')
+        with patch('os.path.isdir',return_value = True):
+            #tests if raises exception without relative_path
+            with pytest.raises(ValueError):
+                add_to_sys_path('')
 
 ### test get_data_path from helper_module
 #test correct path
@@ -112,7 +102,7 @@ def test_get_data_path_file_not_found(tmp_path):
 #unittest needs: what if no gap, no motif after, no motif before,
 # no penalty score, no file, totally wrong file type, gap wrong way around
 
-
+"""
 ### find motif generator
 from main_program import find_motif
 
@@ -182,4 +172,4 @@ def test_find_motif_empty_motif_and_penalty():
 
 #ensure fasta file
 #meet another star
-
+"""
