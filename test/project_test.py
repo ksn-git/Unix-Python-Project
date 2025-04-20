@@ -76,8 +76,22 @@ def test_dir_not_exist(mock_os_functions):
     with pytest.raises(FileNotFoundError):
         add_to_sys_path(relative_path)
 
+##edge cases
+#check if an empty path is handled correctly
+# by raising an exception or ignoring input
+def test_sys_path_empty(mock_os_functions):
+    mock_abspath, mock_isdir = mock_os_functions
 
-#edge cases
+    #generate non-existing dir and set path
+    mock_abspath.return_value = '/project_root/'     #set mocked os.path.abspath  
+    mock_isdir.return_value = True                 
+    
+    #tests if raises exception without relative_path
+    with pytest.raises(ValueError):
+        add_to_sys_path('')
+
+
+
 
 #unittest if file exist
 def test_nonexisting_file():
