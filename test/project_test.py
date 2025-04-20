@@ -31,9 +31,9 @@ def mock_isdir_true():
     with patch('os.path.isdir',return_value = True) as mock_isdir:
         yield mock_isdir
 
-#os.path.isdir false
+#os.path.isdir is false
 @pytest.fixture
-def mock_isdir_true():
+def mock_isdir_false():
     with patch('os.path.isdir',return_value = True) as mock_isdir:
         yield mock_isdir
 
@@ -45,43 +45,33 @@ def mock_isdir_true():
 #tmp_path creates temporary dir
 
 #test if sys_to_path works and doesn't duplicate path
-def test_sys_to_path_function(mock_os_functions,tmp_path):
+def test_sys_to_path_function(tmp_path,mock_isdir_true):
     
     #create tmp_path to provide an actual tmp_dir to interact with
     temp_dir = tmp_path / "example_dir"
     temp_dir.mkdir()
 
-    #mock filepath in temp_dir
-    mock_abspath, mock_isdir = mock_os_functions
-    mock_abspath.return_value = str(temp_dir)
-    mock_isdir.return_value = True
+    #mock abspath after tmp_path creation
+    with patch('os.path.abspath',return_value = str(tmp_path)):
+        #set path
+        relative_path = 'example_dir'
+        expected_path = str(temp_dir)
 
-    # Print mock return values for debugging
-    print(f"Mock abspath return value: {mock_abspath.return_value}")
-    print(f"Mock isdir return value: {mock_isdir.return_value}")
+        #add first path to check if work
+        add_to_sys_path(relative_path)
+        assert expected_path in sys.path
 
-
-    #set path
-    relative_path = 'example_dir'
-    expected_path = str(temp_dir)
-    
-    #add first path to check if work
-    add_to_sys_path(relative_path)
-    assert expected_path in sys.path
-
-    #add second path to check if it duplicates path
-    add_to_sys_path(relative_path)
-    assert sys.path.count(expected_path) == 1
+        #add second path to check if it duplicates path
+        add_to_sys_path(relative_path)
+        assert sys.path.count(expected_path) == 1
 
 
 #if directory does not exist
-def test_dir_not_exist(mock_os_functions):
-    mock_abspath, mock_isdir = mock_os_functions
-
-    #generate non-existing dir and set path
-    mock_abspath.return_value = '/project_root/non_existent_dir'     #set mocked os.path.abspath 
-    mock_isdir.return_value = False                                 #simulates dir does not exist
-    relative_path = 'non_existent_dir'
+def test_dir_not_exist(mock_isdir_false):
+    #mock abspath 
+    with patch('os.path.abspath',return_value = '/project_root'):
+        #set path
+        relative_path = 'non_existent_dir'
 
     #test error
     with pytest.raises(FileNotFoundError):
@@ -90,18 +80,12 @@ def test_dir_not_exist(mock_os_functions):
 ##edge cases
 #check if an empty path is handled correctly
 # by raising an exception or ignoring input
-def test_sys_path_empty(mock_os_functions):
-    mock_abspath, mock_isdir = mock_os_functions
-
-    #generate non-existing dir and set path
-    mock_abspath.return_value = '/project_root/'     #set mocked os.path.abspath  
-    mock_isdir.return_value = True                 
-    
-    #tests if raises exception without relative_path
-    with pytest.raises(ValueError):
-        add_to_sys_path('')
-
-
+def test_sys_path_empty(mock_isdir_true):
+    #mock abspath 
+    with patch('os.path.abspath',return_value = '/project_root'):             
+        #tests if raises exception without relative_path
+        with pytest.raises(ValueError):
+            add_to_sys_path('')
 
 
 #unittest if file exist
