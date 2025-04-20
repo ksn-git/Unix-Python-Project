@@ -21,6 +21,7 @@ add_to_sys_path('src')
 ### unit test helper_module 
 ## correctly build sys.path
 # using mock to isolate a piece of the code without dependecies
+# sometimes uses tmp_path to create an actual temporary directive to test interactions
 # makes the test independant of of the running user
 
 #apply fixture with patches
