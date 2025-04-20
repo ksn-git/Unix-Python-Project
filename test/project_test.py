@@ -50,8 +50,8 @@ def test_sys_to_path_function(tmp_path,mock_isdir_true):
     temp_dir = tmp_path / "example_dir"
     temp_dir.mkdir()
 
-    #mock system after tmp_path creation to fake file in temp_dir
-    with patch('os.path.abspath',return_value = str(temp_dir / 'fake_file.py')):
+    #mock system from run_from.py
+    with patch('os.path.abspath',return_value = str(temp_dir / 'run_from.py')):
         #set path
         relative_path = 'example_dir'
         expected_path = str(temp_dir)
@@ -76,7 +76,7 @@ def test_dir_not_exist(mock_isdir_false):
 #check if an empty path is handled correctly
 # by raising an exception or ignoring input
 def test_sys_path_empty(mock_isdir_true):
-    #mock system from fake file 
+    #mock system 
     with patch('os.path.abspath',return_value = '/project_root'):             
         #tests if raises exception without relative_path
         with pytest.raises(ValueError):
@@ -112,8 +112,8 @@ def test_get_data_path_file_not_found(tmp_path):
     #don't create file
     filename = 'testfile.txt'
 
-    #mock system from temp_file_path
-    with patch('os.path.abspath',return_value = str(tmp_path / 'non_existing_file.py')):
+    #mock system from run_from.py
+    with patch('os.path.abspath',return_value = str(tmp_path / 'run_from.py')):
         with pytest.raises(FileNotFoundError) as err:
             get_data_path(filename)
 
