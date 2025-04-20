@@ -8,6 +8,10 @@ import sys
 def add_to_sys_path(relative_path_from_root: str):
     """Add directory to sys path from project root."""
 
+    #check if relative_path_from_root is empty string 
+    if not relative_path_from_root:
+        raise ValueError(f'The relative path is empty: {relative_path_from_root}')
+
     #find current path
     current_file = os.path.abspath(__file__)
     #go back and look at project root
@@ -21,6 +25,7 @@ def add_to_sys_path(relative_path_from_root: str):
     #add target_path if needed
     if target_path not in sys.path:
         sys.path.insert(0,target_path)
+    
 
 #add file path ('data' is hardcoded)
 def get_data_path(filename):
