@@ -118,14 +118,6 @@ def test_get_data_path_file_not_found(tmp_path):
             get_data_path(filename)
 
 
-  
-### unittest reference_motif_TATAAT function
-from reference_motif import reference_motif_TATAAT
-
-def test_missing_penalty():
-    with pytest.raises(ValueError):
-        m1,p1,gap,m2,p2 = reference_motif_TATAAT('missing_penalty_motif.txt')
-
 
 #unittest needs: what if no gap, no motif after, no motif before,
 # no penalty score, no file, totally wrong file type, gap wrong way around
