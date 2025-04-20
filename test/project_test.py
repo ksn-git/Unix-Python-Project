@@ -83,34 +83,24 @@ def test_sys_path_empty(mock_isdir_true):
             add_to_sys_path('')
 
 ### test get_data_path from helper_module
-# uses fixtures from sys_to_path tests and new fixture to create temp file
-
-#creates a factory function (_create) inside fixture to create new temp files
-@pytest.fixture
-def create_temp_data_file(tmp_path):
-    #create internal/magic function 
-    def _create(filename,content = 'test content'):
-        data_dir = tmp_path / 'data'
-        data_dir.mkdir(exist_ok = True) #TODO add comment
-        file_path = data_dir / filename
-        file_path.write_text(content)
-        return file_path
-    return _create
-
 #test correct path
-def test_get_correct_data_path(create_temp_data_file):
-    #create temp file
+def test_get_correct_data_path(tmp_path):
+    #create temp file location
     filename = 'testfile.txt'
-    temp_file_path = create_temp_data_file(filename)
+    temp_dir = tmp_path / 'data'
+    temp_dir.mkdir()
+    expected_path = temp_dir / filename
+    #create file
+    expected_path.write_text('content')
 
-    #mock system from temp_file_path
-    with patch('os.path.abspath',return_value = str(temp_file_path)):
-        assert get_data_path(filename) == str(temp_file_path)
+    #mock system from run_from.py
+    with patch('os.path.abspath',return_value = str(temp_dir / 'run_from.py')):
+        assert get_data_path(filename) == str(expected_path)
 
 #test file does not exist
 def test_get_data_path_file_not_found(tmp_path):
     #don't create file
-    filename = 'testfile.txt'
+    filename = 'non_existing_file.txt'
 
     #mock system from run_from.py
     with patch('os.path.abspath',return_value = str(tmp_path / 'run_from.py')):
