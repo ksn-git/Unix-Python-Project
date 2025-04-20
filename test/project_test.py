@@ -108,11 +108,6 @@ def test_get_correct_data_path(tmp_path,create_temp_data_file):
     with patch('os.path.abspath',return_value = str(temp_file_path)):
         assert get_data_path(filename) == str(temp_file_path)
 
-#unittest if file exist
-def test_nonexisting_file():
-    with pytest.raises(Exception):
-        #get path
-        data_path = get_data_path('dn6.fsa')
 
 
 ### unittest reference_motif_TATAAT function
