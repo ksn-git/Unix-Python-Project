@@ -99,7 +99,7 @@ def create_temp_data_file(tmp_path):
 
 
 #get correct path
-def test_get_correct_data_path(tmp_path,create_temp_data_file):
+def test_get_correct_data_path(create_temp_data_file):
     #create temp file
     filename = 'testfile.txt'
     temp_file_path = create_temp_data_file(filename)
@@ -108,6 +108,8 @@ def test_get_correct_data_path(tmp_path,create_temp_data_file):
     with patch('os.path.abspath',return_value = str(temp_file_path)):
         assert get_data_path(filename) == str(temp_file_path)
 
+#file does not exist
+#def test_get_data_path_file_not_found():
 
 
 ### unittest reference_motif_TATAAT function
