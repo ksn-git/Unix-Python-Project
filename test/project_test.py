@@ -34,7 +34,7 @@ def mock_isdir_true():
 #os.path.isdir is false
 @pytest.fixture
 def mock_isdir_false():
-    with patch('os.path.isdir',return_value = True) as mock_isdir:
+    with patch('os.path.isdir',return_value = False) as mock_isdir:
         yield mock_isdir
 
 ## Notes and explanation for fixture and mock tests
@@ -51,8 +51,8 @@ def test_sys_to_path_function(tmp_path,mock_isdir_true):
     temp_dir = tmp_path / "example_dir"
     temp_dir.mkdir()
 
-    #mock abspath after tmp_path creation
-    with patch('os.path.abspath',return_value = str(tmp_path)):
+    #mock abspath after tmp_path creation to fake file in temp_dir
+    with patch('os.path.abspath',return_value = str(temp_dir / 'fake_file.py')):
         #set path
         relative_path = 'example_dir'
         expected_path = str(temp_dir)
@@ -65,17 +65,13 @@ def test_sys_to_path_function(tmp_path,mock_isdir_true):
         add_to_sys_path(relative_path)
         assert sys.path.count(expected_path) == 1
 
-
 #if directory does not exist
 def test_dir_not_exist(mock_isdir_false):
-    #mock abspath 
     with patch('os.path.abspath',return_value = '/project_root'):
-        #set path
         relative_path = 'non_existent_dir'
-
-    #test error
-    with pytest.raises(FileNotFoundError):
-        add_to_sys_path(relative_path)
+        #tests if FileNotFoundError is detected
+        with pytest.raises(FileNotFoundError):
+            add_to_sys_path(relative_path)
 
 ##edge cases
 #check if an empty path is handled correctly
