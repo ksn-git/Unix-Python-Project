@@ -24,7 +24,7 @@ fasta.load(fasta_file)
 fasta.verify("dnax")     
 
 # Opening the motif description file. Works if the file is in a "data" subfolder. 
-motif_file = get_data_path(motif)     #this is the fasta file, I've added a reference file     
+motif_file = get_data_path(motif)          
 
 infile = open(motif_file,'r')
 # Arranging motif into two lists
