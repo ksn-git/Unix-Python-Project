@@ -27,8 +27,8 @@ def add_to_sys_path(relative_path_from_root: str):
         sys.path.insert(0,target_path)
     
 
-#add file path ('data' is hardcoded)
-def get_data_path(filename):
+#add file path ('data' is the default directive for the data)
+def get_data_path(filename,data = 'data'):
     """Finds full data path in directory"""
 
     #find current path
@@ -36,7 +36,7 @@ def get_data_path(filename):
     #go back and look at project root
     project_root = os.path.dirname(os.path.dirname(current_file))
     #return full path
-    full_path = os.path.join(project_root, 'data', filename)
+    full_path = os.path.join(project_root, data, filename)
 
     #check if file exist
     if not os.path.isfile(full_path):
