@@ -62,37 +62,38 @@ def detect_motif(motif):
         # Skip descriptive lines
         if line.startswith("#"):
             continue
+        #seperate line into parts
+        parts = line.strip().split('\t')
+        symbol = parts[0]
+
         # Line specifying unimportant positions
-        elif line.startswith("*"):
-            unimportant_positions = line.strip().split(sep="\t")[1]
-            # If there is a defined number of unimportant positions
+        if symbol == '*':
+            num_positions = parts[1]
+            # If a fixed number of unimportant positions are found (ex. 15)
             try:
-                unimportant_positions = int(unimportant_positions)
-                minimum = unimportant_positions
-                maximum = unimportant_positions
-                motif_list.append("*")
-                penalty_list.append(0) 
-            except ValueError:
-                pass                
-            # If there is a range of unimportant positions
-            if isinstance(unimportant_positions, str):
-                result = re.search(r"(\d+)-(\d+)", unimportant_positions)
-                if result is not None:
-                    minimum = int(result.group(1))
-                    maximum = int(result.group(2))
-                    motif_list.append("*")
-                    penalty_list.append(0)
+                count = int(num_positions)      
+                motif_list.extend(['*'] * count)
+                penalty_list.append([0] * count) 
+            except ValueError:              
+                # check if a range of unimportant positions are found (ex. 15-21)
+                match = re.search(r"(\d+)-(\d+)", num_positions)
+                if match:
+                    minimum = int(match.group(1))
+                    maximum = int(match.group(2))
+                    count = maximum                 #assume maximum number of spaces
+                    motif_list.append(['*'] * count)
+                    penalty_list.append([0] * count)
                 else:
                     raise ValueError("Invalid unimportant positions format")
+        
         # Lines with >1 possible character 
-        elif len(line.strip().split(sep="\t")[0]) > 1:
-            multiple_chars = set()
-            for char in line.strip().split(sep="\t")[0]:
-                multiple_chars.add(char)
-            motif_list.append(multiple_chars)
-            penalty_list.append(line.strip().split(sep="\t")[1])
+        elif len(symbol) > 1:
+            motif_list.append(set(symbol))
+            penalty_list.append(int(parts[1]))
         # Lines specifying important positions   
         else:
-            motif_list.append(line.strip().split(sep="\t")[0])
-            penalty_list.append(line.strip().split(sep="\t")[1])
+            motif_list.append(symbol)
+            penalty_list.append(int(parts[1]))
     infile.close()
+
+    return motif_list,penalty_list
