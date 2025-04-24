@@ -84,7 +84,6 @@ def detect_motif(motif):
                     penalty_list.append(0)
                 else:
                     raise ValueError("Invalid unimportant positions format")
-                    sys.exit(1)
         # Lines with >1 possible character 
         elif len(line.strip().split(sep="\t")[0]) > 1:
             multiple_chars = set()
