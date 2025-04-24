@@ -80,7 +80,7 @@ def detect_motif(motif):
                 if match:
                     minimum = int(match.group(1))
                     maximum = int(match.group(2))
-                    count = maximum                 #assume maximum number of spaces
+                    count = minimum                #assume maximum number of spaces
                     motif_list.append(['*'] * count)
                     penalty_list.append([0] * count)
                 else:
