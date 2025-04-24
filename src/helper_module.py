@@ -1,8 +1,10 @@
 #!/bin/env python3
 
-#libraries
+#dependencies add_to_sys_path and get_data_path
 import os
 import sys
+#dependency detect_motif
+import re
 
 #change sys_path
 def add_to_sys_path(relative_path_from_root: str):
@@ -52,8 +54,6 @@ def detect_motif(motif):
      Motif list:   ['A','T','C','G','G','A','*','*','*','A','G','T','C','G','T']
      Penalty list: [8,7,6,7,8,9,0,0,0,8,7,6,9,8,4] 
      """
-    #dependencies
-    import re
 
     infile = open(motif,'r')
     motif_list = []
