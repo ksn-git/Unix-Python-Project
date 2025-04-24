@@ -45,4 +45,55 @@ def get_data_path(filename,data = 'data'):
     return full_path
 
 
+# detect motif
+def detect_motif(motif):
+    """Loads and detects motif from file.
+    It arranges the motif into two lists (example):
+     Motif list:   ['A','T','C','G','G','A','*','*','*','A','G','T','C','G','T']
+     Penalty list: [8,7,6,7,8,9,0,0,0,8,7,6,9,8,4] 
+     """
+    #dependencies
+    import re
 
+    infile = open(motif,'r')
+    motif_list = []
+    penalty_list = []
+    for line in infile:
+        # Skip descriptive lines
+        if line.startswith("#"):
+            continue
+        # Line specifying unimportant positions
+        elif line.startswith("*"):
+            unimportant_positions = line.strip().split(sep="\t")[1]
+            # If there is a defined number of unimportant positions
+            try:
+                unimportant_positions = int(unimportant_positions)
+                minimum = unimportant_positions
+                maximum = unimportant_positions
+                motif_list.append("*")
+                penalty_list.append(0) 
+            except ValueError:
+                pass                
+            # If there is a range of unimportant positions
+            if isinstance(unimportant_positions, str):
+                result = re.search(r"(\d+)-(\d+)", unimportant_positions)
+                if result is not None:
+                    minimum = int(result.group(1))
+                    maximum = int(result.group(2))
+                    motif_list.append("*")
+                    penalty_list.append(0)
+                else:
+                    raise ValueError("Invalid unimportant positions format")
+                    sys.exit(1)
+        # Lines with >1 possible character 
+        elif len(line.strip().split(sep="\t")[0]) > 1:
+            multiple_chars = set()
+            for char in line.strip().split(sep="\t")[0]:
+                multiple_chars.add(char)
+            motif_list.append(multiple_chars)
+            penalty_list.append(line.strip().split(sep="\t")[1])
+        # Lines specifying important positions   
+        else:
+            motif_list.append(line.strip().split(sep="\t")[0])
+            penalty_list.append(line.strip().split(sep="\t")[1])
+    infile.close()
