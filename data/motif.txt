@@ -1,0 +1,16 @@
+# -35 element
+T	7
+T	8
+G	6
+A	5
+C	5
+A	5
+# intervening unimportant bases
+*	17
+# -10 element
+T	8
+A	8
+T	6
+AT	6
+A	5
+T	8
