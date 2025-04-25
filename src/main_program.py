@@ -184,4 +184,4 @@ for header, sequence in fasta:
 
 #for match in find_motif(fasta.sequences[1], motif_list, penalty_list, max_deviation):
 #        print(match)
-
+"""
