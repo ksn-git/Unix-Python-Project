@@ -153,8 +153,26 @@ def test_load_motif_right_gap(tmp_path):
     assert min_gap == 15
     assert max_gap == 21
 
+"""
 # error handling
+#impossible gap, 21-15 
+def test_load_motif_wrong_gap(tmp_path):
+    #temp file
+    motif_file = tmp_path / 'motif_gap_fixed.txt'
+    motif_file.write_text(
+        "# -35 element\nT\t7\nT\t8\nG\t6\nA\t5\nC\t5\nA\t5\n"
+        "# intervening unimportant bases\n"
+        "*\t21-15\n"
+        "# -10 element\n"
+        "T\t8\nA\t8\nT\t6\nAT\t6\nA\t5\nT\t8\n")
 
+    #load temp file
+    motif, penalty, min_gap,max_gap = load_motif(str(motif_file))
+    with pytest.raises(IndexError):
+        assert min_gap < max_gap
+
+#gap has invalid characters
+"""
 
 
 # edge cases
