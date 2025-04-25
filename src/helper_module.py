@@ -46,57 +46,58 @@ def get_data_path(filename,data = 'data'):
     
     return full_path
 
-
-# detect motif
-def detect_motif(motif):
-    """Loads and detects motif from file.
-    It arranges the motif into two lists (example):
-     Motif list:   ['A','T','C','G','G','A','*','*','*','A','G','T','C','G','T']
-     Penalty list: [8,7,6,7,8,9,0,0,0,8,7,6,9,8,4] 
-     """
-
-    infile = open(motif,'r')
-    motif_list = []
-    penalty_list = []
+#load motif
+def load_motif(motif_file):
+    """ Returns a list of the motif and associated penalty scores as well as minimum and maximum number of gaps """
+    # Arranging motif into two lists. Example output:
+    # Motif list:   ATCGGATC*AGTCGTTA
+    # Penalty list: 87678942047698432
+    
+    # Open file with motif
+    infile = open(motif_file,'r')
+    # Initialize objects
+    motif_list, penalty_list = [], []
+    minimum_gap, maximum_gap = 0, 0
+    
     for line in infile:
+        row = line.strip().split(sep="\t")
         # Skip descriptive lines
         if line.startswith("#"):
             continue
-        #seperate line into parts
-        parts = line.strip().split('\t')
-        symbol = parts[0]
-
-        # Line specifying unimportant positions
-        if symbol == '*':
-            num_positions = parts[1]
-            # If a fixed number of unimportant positions are found (ex. 15)
+        # Line specifying unimportant positions / gap in motif
+        elif line.startswith("*"):
+            gap_positions = line.strip().split(sep="\t")[1]
+            # If there is a defined number of unimportant positions
             try:
-                gab = int(num_positions)      
-                motif_list.append('*')
+                gap_positions = int(gap_positions)
+                minimum_gap = gap_positions
+                maximum_gap = gap_positions
+                motif_list.append("*")
                 penalty_list.append(0) 
-            except ValueError:              
-                # check if a range of unimportant positions are found (ex. 15-21)
-                match = re.search(r"(\d+)-(\d+)", num_positions)
-                if match:
-                    gap_minimum = int(match.group(1))
-                    gap_maximum = int(match.group(2))
-                    count = gap_minimum                #assume maximum number of spaces
-                    motif_list.append(['*'] * count)
-                    penalty_list.append([0] * count)
-                else:
-                    raise ValueError("Invalid unimportant positions format")
-        
+            except ValueError:       
+                # If there is a range of unimportant positions
+                    result = re.search(r"(\d+)-(\d+)", gap_positions)
+                    if result is not None:
+                        minimum_gap = int(result.group(1))
+                        maximum_gap = int(result.group(2))
+                        motif_list.append("*")
+                        penalty_list.append(0)
+                    # If not an integer or a range, then the format is invalid
+                    else:
+                        raise ValueError("Invalid unimportant positions format")
+                        sys.exit(1)
         # Lines with >1 possible character 
-        elif len(symbol) > 1:
-            motif_list.append(set(symbol))
-            penalty_list.append(int(parts[1]))
+        elif len(line.strip().split(sep="\t")[0]) > 1:
+            multiple_chars = set()
+            for char in line.strip().split(sep="\t")[0]:
+                multiple_chars.add(char)
+            motif_list.append(multiple_chars)
+            penalty_list.append(line.strip().split(sep="\t")[1])
         # Lines specifying important positions   
         else:
-            motif_list.append(symbol)
-            penalty_list.append(int(parts[1]))
+            motif_list.append(line.strip().split(sep="\t")[0])
+            penalty_list.append(line.strip().split(sep="\t")[1])
     infile.close()
-
-    return motif_list,penalty_list
 
 
 
