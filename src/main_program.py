@@ -72,6 +72,7 @@ for line in infile:
         penalty_list.append(line.strip().split(sep="\t")[1])
 infile.close()
 
+"""
 #saved use case code for find_motif
 print("Matches are listed as (start position, penalty score, match)")
 print("The header corresponding to the match is printed immediately before the match")
@@ -82,4 +83,4 @@ for header, sequence in fasta:
 
 #for match in find_motif(fasta.sequences[1], motif_list, penalty_list, max_deviation):
 #        print(match)
-
+"""
