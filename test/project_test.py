@@ -174,7 +174,19 @@ def test_load_motif_switched_gap(tmp_path):
     assert max_gap == 21
 
 #gap has invalid characters
+def test_load_motif_char_in_gap(tmp_path):
+    #temp file
+    motif_file = tmp_path / 'motif_gap_fixed.txt'
+    motif_file.write_text(
+        "# -35 element\nT\t7\nT\t8\nG\t6\nA\t5\nC\t5\nA\t5\n"
+        "# intervening unimportant bases\n"
+        "*\t21-a\n"
+        "# -10 element\n"
+        "T\t8\nA\t8\nT\t6\nAT\t6\nA\t5\nT\t8\n")
 
+    #test ValueError
+    with pytest.raises(ValueError):
+        load_motif(str(motif_file))
 
 
 # edge cases
