@@ -71,16 +71,16 @@ def detect_motif(motif):
             num_positions = parts[1]
             # If a fixed number of unimportant positions are found (ex. 15)
             try:
-                count = int(num_positions)      
-                motif_list.extend(['*'] * count)
-                penalty_list.append([0] * count) 
+                gab = int(num_positions)      
+                motif_list.append('*')
+                penalty_list.append(0) 
             except ValueError:              
                 # check if a range of unimportant positions are found (ex. 15-21)
                 match = re.search(r"(\d+)-(\d+)", num_positions)
                 if match:
-                    minimum = int(match.group(1))
-                    maximum = int(match.group(2))
-                    count = minimum                #assume maximum number of spaces
+                    gap_minimum = int(match.group(1))
+                    gap_maximum = int(match.group(2))
+                    count = gap_minimum                #assume maximum number of spaces
                     motif_list.append(['*'] * count)
                     penalty_list.append([0] * count)
                 else:
