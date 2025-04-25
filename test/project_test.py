@@ -117,7 +117,45 @@ def test_load_motif_basic(tmp_path):
     assert min_gap == 0
     assert max_gap == 0
 
+#with gap (fixed range)
+def test_load_motif_fixed_gap(tmp_path):
+    #temp file
+    motif_file = tmp_path / 'motif_gap_fixed.txt'
+    motif_file.write_text(
+        "# -35 element\nT\t7\nT\t8\nG\t6\nA\t5\nC\t5\nA\t5\n"
+        "# intervening unimportant bases\n"
+        "*\t17\n"
+        "# -10 element\n"
+        "T\t8\nA\t8\nT\t6\nAT\t6\nA\t5\nT\t8\n")
+
+    #load temp file
+    motif, penalty, min_gap,max_gap = load_motif(str(motif_file))
+    assert motif == ['T', 'T', 'G', 'A', 'C', 'A', '*', 'T', 'A', 'T', {'A', 'T'}, 'A', 'T']
+    assert penalty == ['7', '8', '6', '5', '5', '5', 0, '8', '8', '6', '6', '5', '8']
+    assert min_gap == 17
+    assert max_gap == 17
+
+#with gap (range)
+def test_load_motif_right_gap(tmp_path):
+    #temp file
+    motif_file = tmp_path / 'motif_gap_fixed.txt'
+    motif_file.write_text(
+        "# -35 element\nT\t7\nT\t8\nG\t6\nA\t5\nC\t5\nA\t5\n"
+        "# intervening unimportant bases\n"
+        "*\t15-21\n"
+        "# -10 element\n"
+        "T\t8\nA\t8\nT\t6\nAT\t6\nA\t5\nT\t8\n")
+
+    #load temp file
+    motif, penalty, min_gap,max_gap = load_motif(str(motif_file))
+    assert motif == ['T', 'T', 'G', 'A', 'C', 'A', '*', 'T', 'A', 'T', {'A', 'T'}, 'A', 'T']
+    assert penalty == ['7', '8', '6', '5', '5', '5', 0, '8', '8', '6', '6', '5', '8']
+    assert min_gap == 15
+    assert max_gap == 21
+
 # error handling
+
+
 
 # edge cases
 
