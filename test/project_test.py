@@ -103,7 +103,7 @@ def test_get_data_path_file_not_found(tmp_path):
 # no penalty score, no file, totally wrong file type, gap wrong way around
 
 ### find motif generator
-from main_program import find_motif
+from helper_module import find_motif
 
 #Basic Functionality Test
 def test_find_motif_basic():
@@ -122,8 +122,8 @@ def test_find_motif_with_gap():
     motif = ['A','T','C','G','G','A','*','A','G','T','C','G','T']
     penalty = [8,7,6,7,8,9,0,8,7,6,9,8,4] 
     max_deviation = 18
-    minimum_gap = 1
-    maximum_gap = 4
+    minimum_gap = 7
+    maximum_gap = 11
     result = list(find_motif(sequence,motif,penalty,max_deviation,minimum_gap,maximum_gap))
     assert result == [(0,16,'ATCGGACCCACTAGT')]
 
