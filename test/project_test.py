@@ -102,7 +102,6 @@ def test_get_data_path_file_not_found(tmp_path):
 #unittest needs: what if no gap, no motif after, no motif before,
 # no penalty score, no file, totally wrong file type, gap wrong way around
 
-"""
 ### find motif generator
 from main_program import find_motif
 
@@ -112,18 +111,23 @@ def test_find_motif_basic():
     motif = ['T','A','T','A','A','T']
     penalty = [8,8,6,6,5,8]
     max_deviation = 0
-    result = list(find_motif(sequence,motif,penalty,max_deviation))
+    minimum_gap = 0
+    maximum_gap = 0
+    result = list(find_motif(sequence,motif,penalty,max_deviation,minimum_gap,maximum_gap))
     assert result == [(4,0,'TATAAT')]
 
 #functionality test with gap
 def test_find_motif_with_gap():
     sequence = 'ATCGGACCCACTAGT'
-    motif = ['A','T','C','G','G','A','*','*','*','A','G','T','C','G','T']
-    penalty = [8,7,6,7,8,9,0,0,0,8,7,6,9,8,4] 
+    motif = ['A','T','C','G','G','A','*','A','G','T','C','G','T']
+    penalty = [8,7,6,7,8,9,0,8,7,6,9,8,4] 
     max_deviation = 18
-    result = list(find_motif(sequence,motif,penalty,max_deviation))
+    minimum_gap = 1
+    maximum_gap = 4
+    result = list(find_motif(sequence,motif,penalty,max_deviation,minimum_gap,maximum_gap))
     assert result == [(0,16,'ATCGGACCCACTAGT')]
 
+"""
 #with multiple available bp
 def test_find_motif_multiple_bp():
     sequence = 'CGCCTATAATAAT'
