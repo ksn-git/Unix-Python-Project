@@ -102,8 +102,28 @@ def test_get_data_path_file_not_found(tmp_path):
 #unittest needs: what if no gap, no motif after, no motif before,
 # no penalty score, no file, totally wrong file type, gap wrong way around
 
+from helper_module import load_motif,find_motif
+### load_motif tests
+# correct structure parsing
+def test_load_motif_basic(tmp_path):
+    #temp file
+    motif_file = tmp_path / 'motif.txt'
+    motif_file.write_text('A\t8\nT\t7\nC\t6\nG\t5\n')
+
+    #load temp file
+    motif, penalty, min_gap,max_gap = load_motif(str(motif_file))
+    assert motif == ['A', 'T', 'C', 'G']
+    assert penalty == ['8', '7', '6', '5']
+    assert min_gap == 0
+    assert max_gap == 0
+
+# error handling
+
+# edge cases
+
+
+"""
 ### find motif generator
-from helper_module import find_motif
 
 #Basic Functionality Test
 def test_find_motif_basic():
@@ -127,7 +147,7 @@ def test_find_motif_with_gap():
     result = list(find_motif(sequence,motif,penalty,max_deviation,minimum_gap,maximum_gap))
     assert result == [(0,16,'ATCGGACCCACTAGT')]
 
-"""
+
 #with multiple available bp
 def test_find_motif_multiple_bp():
     sequence = 'CGCCTATAATAAT'
