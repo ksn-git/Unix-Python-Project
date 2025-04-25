@@ -102,7 +102,8 @@ def test_get_data_path_file_not_found(tmp_path):
 #unittest needs: what if no gap, no motif after, no motif before,
 # no penalty score, no file, totally wrong file type, gap wrong way around
 
-from helper_module import load_motif, find_motif
+#from helper_module import load_motif, find_motif
+from test import load_motif
 
 ### load_motif tests
 # correct structure parsing
@@ -137,7 +138,7 @@ def test_load_motif_fixed_gap(tmp_path):
     assert max_gap == 17
 
 #with gap (range)
-def test_load_motif_right_gap(tmp_path):
+def test_load_motif_gap(tmp_path):
     #temp file
     motif_file = tmp_path / 'motif_gap_fixed.txt'
     motif_file.write_text(
@@ -154,10 +155,10 @@ def test_load_motif_right_gap(tmp_path):
     assert min_gap == 15
     assert max_gap == 21
 
-"""
+
 # error handling
-#impossible gap, 21-15 
-def test_load_motif_wrong_gap(tmp_path):
+#impossible gap, 21-15, switch numbers, "soft" error
+def test_load_motif_switched_gap(tmp_path):
     #temp file
     motif_file = tmp_path / 'motif_gap_fixed.txt'
     motif_file.write_text(
@@ -168,12 +169,12 @@ def test_load_motif_wrong_gap(tmp_path):
         "T\t8\nA\t8\nT\t6\nAT\t6\nA\t5\nT\t8\n")
 
     #load temp file
-    motif, penalty, min_gap,max_gap = load_motif(str(motif_file))
-    with pytest.raises(IndexError):
-        assert min_gap < max_gap
+    motif, penalty, min_gap, max_gap = load_motif(str(motif_file))
+    assert min_gap == 15
+    assert max_gap == 21
 
 #gap has invalid characters
-"""
+
 
 
 # edge cases
