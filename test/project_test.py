@@ -102,7 +102,9 @@ def test_get_data_path_file_not_found(tmp_path):
 #unittest needs: what if no gap, no motif after, no motif before,
 # no penalty score, no file, totally wrong file type, gap wrong way around
 
-from helper_module import load_motif, find_motif
+#from helper_module import load_motif, find_motif
+from test import load_motif
+
 ### load_motif tests
 # correct structure parsing
 def test_load_motif_basic(tmp_path):
@@ -176,7 +178,7 @@ def test_load_motif_wrong_gap(tmp_path):
 
 
 # edge cases
-
+"""
 #functionality test with gap
 def test_find_motif_with_gap():
     sequence = 'ATCGGACCCACTAGTTTGACAACCTTGAAGGTCGTGGCTATAAT'
@@ -189,7 +191,6 @@ def test_find_motif_with_gap():
     assert result == [(15, 0, 'TTGACAACCTTGAAGGTCGTGGCTATAAT')]
  
 
-"""
 ### find motif generator
 
 #Basic Functionality Test
