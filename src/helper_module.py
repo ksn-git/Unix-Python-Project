@@ -3,7 +3,7 @@
 #dependencies add_to_sys_path and get_data_path
 import os
 import sys
-#dependency detect_motif
+#dependency load_motif
 import re
 
 #change sys_path
@@ -66,7 +66,7 @@ def load_motif(motif_file):
             continue
         # Line specifying unimportant positions / gap in motif
         elif line.startswith("*"):
-            gap_positions = line.strip().split(sep="\t")[1]
+            gap_positions = row[1]
             # If there is a defined number of unimportant positions
             try:
                 gap_positions = int(gap_positions)
@@ -87,16 +87,16 @@ def load_motif(motif_file):
                         raise ValueError("Invalid unimportant positions format")
                         sys.exit(1)
         # Lines with >1 possible character 
-        elif len(line.strip().split(sep="\t")[0]) > 1:
+        elif len(row[0]) > 1:
             multiple_chars = set()
-            for char in line.strip().split(sep="\t")[0]:
+            for char in row[0]:
                 multiple_chars.add(char)
             motif_list.append(multiple_chars)
-            penalty_list.append(line.strip().split(sep="\t")[1])
+            penalty_list.append(row[1])
         # Lines specifying important positions   
         else:
-            motif_list.append(line.strip().split(sep="\t")[0])
-            penalty_list.append(line.strip().split(sep="\t")[1])
+            motif_list.append(row[0])
+            penalty_list.append(row[1])
     infile.close()
     return motif_list, penalty_list, minimum_gap, maximum_gap
 
@@ -122,7 +122,7 @@ def find_motif(sequence, motif_list, penalty_list, max_deviation, minimum_gap, m
         # If there are gaps in the motif, window is the motif length + maximum number of gaps in motif. 
         # Subtract 1 because there is a star character in the motif list denoting gaps
         else:
-            window = sequence[i:(i + len(motif_list) - 1 + maximum_gap)]                # Window of the same length as the longest possible motif. Len = 29
+            window = sequence[i:(i + len(motif_list) -1 + maximum_gap)]                # Window of the same length as the longest possible motif. Len = 29
         # Reset deviation score and search window for motif
         deviation = 0
         for j in range(len(window)):
