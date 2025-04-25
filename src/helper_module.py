@@ -98,6 +98,7 @@ def load_motif(motif_file):
             motif_list.append(line.strip().split(sep="\t")[0])
             penalty_list.append(line.strip().split(sep="\t")[1])
     infile.close()
+    return motif_list, penalty_list, minimum_gap, maximum_gap
 
 
 
