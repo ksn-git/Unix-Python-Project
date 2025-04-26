@@ -1,7 +1,7 @@
 
 import sys, re, os
 from peter_fasta_class import Fasta
-from helper_module import get_data_path
+from helper_module import get_data_path,load_motif
 
 # Getting filename with motif from command line
 if len(sys.argv) != 4:                              
@@ -24,70 +24,7 @@ fasta.load(fasta_file)
 fasta.verify("dnax")     
 
 # Opening the motif description file. Works if the file is in a "data" subfolder. 
-# check if file exist is in helper_module 
-motif_file = get_data_path(motif)     #this is the fasta file, I've added a reference file     
-
-def load_motif(motif_file):
-    """ Returns a list of the motif and associated penalty scores as well as minimum and maximum number of gaps """
-    # Arranging motif into two lists. Example output:
-    # Motif list:   ATCGGATC*AGTCGTTA
-    # Penalty list: 87678942047698432
-    
-    # Open file with motif
-    infile = open(motif_file,'r')
-    # Initialize objects
-    motif_list, penalty_list = [], []
-    minimum_gap, maximum_gap = 0, 0
-    
-    for line in infile:
-        row = line.strip().split(sep="\t")
-        # Skip descriptive lines
-        if line.startswith("#"):
-            continue
-        # Line specifying unimportant positions / gap in motif
-        elif line.startswith("*"):
-            gap_positions = row[1]
-            # If there is a defined number of unimportant positions
-            try:
-                gap_positions = int(gap_positions)
-                minimum_gap = gap_positions
-                maximum_gap = gap_positions
-                motif_list.append("*")
-                penalty_list.append(0) 
-            except ValueError:       
-                # If there is a range of unimportant positions
-                    result = re.search(r"(\d+)-(\d+)", gap_positions)
-                    if result is not None:
-                        pos1 = int(result.group(1))
-                        pos2 = int(result.group(2))
-                        minimum_gap = min(pos1,pos2)
-                        maximum_gap = max(pos1,pos2)
-                        if pos1 != minimum_gap or pos2 != maximum_gap:
-                            print(f'The position of the minimum and maximum gap has been switched from [{pos1}:{pos2}] to [{minimum_gap}:{maximum_gap}]')
-
-                        motif_list.append("*")
-                        penalty_list.append(0)
-                    # If not an integer or a range, then the format is invalid
-                    else:
-                        raise ValueError("Invalid unimportant positions format")
-                        sys.exit(1)
-        # Lines with >1 possible character 
-        elif len(row[0]) > 1:
-            multiple_chars = set()
-            for char in row[0]:
-                multiple_chars.add(char)
-            motif_list.append(multiple_chars)
-            penalty_list.append(row[1])
-        # Lines specifying important positions   
-        else:
-            motif_list.append(row[0])
-            penalty_list.append(row[1])
-    infile.close()
-    return motif_list, penalty_list, minimum_gap, maximum_gap
-
-# Initialize
-motif_list, penalty_list = [], []
-minimum_gap, maximum_gap = 0, 0
+motif_file = get_data_path(motif)       
 # Load motif and save the function output
 motif_list, penalty_list, minimum_gap, maximum_gap = load_motif(motif_file)
 print(motif_list, penalty_list, minimum_gap, maximum_gap)
