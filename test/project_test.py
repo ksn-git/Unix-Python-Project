@@ -102,8 +102,7 @@ def test_get_data_path_file_not_found(tmp_path):
 #unittest needs: what if no gap, no motif after, no motif before,
 # no penalty score, no file, totally wrong file type, gap wrong way around
 
-#from helper_module import load_motif, find_motif
-from test import load_motif
+from helper_module import load_motif, find_motif
 
 ### load_motif tests
 # correct structure parsing
@@ -115,7 +114,7 @@ def test_load_motif_basic(tmp_path):
     #load temp file
     motif, penalty, min_gap,max_gap = load_motif(str(motif_file))
     assert motif == ['A', 'T', 'C', 'G']
-    assert penalty == ['8', '7', '6', '5']
+    assert penalty == [8, 7, 6, 5]
     assert min_gap == 0
     assert max_gap == 0
 
@@ -133,7 +132,7 @@ def test_load_motif_fixed_gap(tmp_path):
     #load temp file
     motif, penalty, min_gap,max_gap = load_motif(str(motif_file))
     assert motif == ['T', 'T', 'G', 'A', 'C', 'A', '*', 'T', 'A', 'T', {'A', 'T'}, 'A', 'T']
-    assert penalty == ['7', '8', '6', '5', '5', '5', 0, '8', '8', '6', '6', '5', '8']
+    assert penalty == [7, 8, 6, 5, 5, 5, 0, 8, 8, 6, 6, 5, 8]
     assert min_gap == 17
     assert max_gap == 17
 
@@ -151,7 +150,7 @@ def test_load_motif_gap(tmp_path):
     #load temp file
     motif, penalty, min_gap,max_gap = load_motif(str(motif_file))
     assert motif == ['T', 'T', 'G', 'A', 'C', 'A', '*', 'T', 'A', 'T', {'A', 'T'}, 'A', 'T']
-    assert penalty == ['7', '8', '6', '5', '5', '5', 0, '8', '8', '6', '6', '5', '8']
+    assert penalty == [7, 8, 6, 5, 5, 5, 0, 8, 8, 6, 6, 5, 8]
     assert min_gap == 15
     assert max_gap == 21
 
@@ -190,19 +189,19 @@ def test_load_motif_char_in_gap(tmp_path):
 
 
 # edge cases
-"""
+
 #functionality test with gap
 def test_find_motif_with_gap():
     sequence = 'ATCGGACCCACTAGTTTGACAACCTTGAAGGTCGTGGCTATAAT'
     motif = ['T', 'T', 'G', 'A', 'C', 'A', '*', 'T', 'A', 'T','A', 'A', 'T']
-    penalty = ['7', '8', '6', '5', '5', '5', 0, '8', '8', '6', '6', '5', '8'] 
+    penalty = [7, 8, 6, 5, 5, 5, 0, 8, 8, 6, 6, 5, 8] 
     max_deviation = 10
     minimum_gap = 17
     maximum_gap = 17
     result = list(find_motif(sequence,motif,penalty,max_deviation,minimum_gap,maximum_gap))
     assert result == [(15, 0, 'TTGACAACCTTGAAGGTCGTGGCTATAAT')]
  
-
+"""
 ### find motif generator
 
 #Basic Functionality Test
