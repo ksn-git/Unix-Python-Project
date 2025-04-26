@@ -58,8 +58,13 @@ def load_motif(motif_file):
                 # If there is a range of unimportant positions
                     result = re.search(r"(\d+)-(\d+)", gap_positions)
                     if result is not None:
-                        minimum_gap = int(result.group(1))
-                        maximum_gap = int(result.group(2))
+                        pos1 = int(result.group(1))
+                        pos2 = int(result.group(2))
+                        minimum_gap = min(pos1,pos2)
+                        maximum_gap = max(pos1,pos2)
+                        if pos1 != minimum_gap or pos2 != maximum_gap:
+                            print(f'The position of the minimum and maximum gap has been switched from [{pos1}:{pos2}] to [{minimum_gap}:{maximum_gap}]')
+
                         motif_list.append("*")
                         penalty_list.append(0)
                     # If not an integer or a range, then the format is invalid
