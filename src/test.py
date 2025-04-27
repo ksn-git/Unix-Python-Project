@@ -59,3 +59,61 @@ def load_motif(motif_file):
     infile.close()
     return motif_list, penalty_list, minimum_gap, maximum_gap
 
+def find_motif(sequence, motif_list, penalty_list, max_deviation, minimum_gap, maximum_gap):
+    """ Generator that searches for motif """
+    """ Yields position, deviation and sequence when a match is found """
+    """ Tries to make a match in each window until max deviation is reached """
+    # Find start position of gap and length of 2nd part of the motif
+    try:
+        star_index = motif_list.index("*")      
+        len_part_2 = len(motif_list) - star_index - 1
+    # If no gaps in motif, ignore
+    except ValueError:
+        star_index = None
+        len_part_2 = 0      
+
+    #find length of input
+    seq_len = len(sequence)
+    motif_len = len(motif_list) - (1 if star_index is not None else 0)          #substract 1 if gap exist
+    max_window = motif_len + (maximum_gap if star_index is not None else 0)     #add gap to window if it exists
+
+    # Start searching for matches
+    for i in range(len(seq_len - max_window + 1)):                            # Search until the remaining seq is not long enough to be the motif
+        # reset match
+        window = sequence[i:i+max_window]
+        deviation = 0
+        index = 0                               #index in window or position?
+        while index < len(window):
+            # while the gap exist and the gap is reached
+            if star_index is not None and index == star_index:
+                #try with all possible gaps
+                for gap_position in range(minimum_gap,maximum_gap +1):
+                    deviation_gap = 0      
+                    valid = True
+                    for m in range(len_part_2):
+                        window_pos = index + gap_position + m 
+                        motif_pos = star_index + 1 + m 
+                        #break if exceeding window or motif
+                        if window_pos >= len(window) or motif_pos >= len(motif_list):
+                            valid = False
+                            break
+                        expected = motif_list[motif_pos]            #match
+                        actual = window[window_pos]                 #actual character
+                        penalty = penalty_list[motif_pos]           #penalty
+                        #if multiple allowed characters are found
+                        if isinstance(expected,set):
+                            if actual not in expected:
+                                deviation_gap += penalty
+                        else:
+                            if actual != expected:
+                                deviation_gap += penalty
+                        if deviation_gap > max_deviation:
+                            valid = False
+                            break
+                    if valid and deviation + deviation_gap <= max_deviation:
+                        start = star_index + gap_position
+                        end = star_index + gap_position + len_part_2
+                        matched_sequence = window[:star_index] + window[start:end]
+                        yield (i,deviation + deviation_gap,matched_sequence)
+
+                        
