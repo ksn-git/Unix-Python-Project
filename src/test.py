@@ -59,6 +59,119 @@ def load_motif(motif_file):
     infile.close()
     return motif_list, penalty_list, minimum_gap, maximum_gap
 
+#sliding window
+def generate_window(sequence,window_size):
+    for i in range(len(sequence) - window_size + 1):
+        yield i,sequence[i:i+window_size]
+
+#build match - returns reformatted match
+def build_match(window,star_index,gap_size,len_part_2):
+    start_gap = star_index + gap_size
+    end_gap = star_index + gap_size + len_part_2
+    return window[:star_index] + window[start_gap:end_gap]
+
+#check match
+def check_match(window,motif_list,penalty_list,max_deviation,minimum_gap,maximum_gap):
+    #finds gap if in motif
+    try:
+        star_index = motif_list.index('*')
+        len_part_2 = len(motif_list) - star_index - 1
+    except ValueError:
+        star_index = None
+        len_part_2
+    
+    deviation = 0
+
+    #check motif with gap
+    if star_index is not None:
+        #check before the gap is encountered
+        for i in range(star_index):
+            expected = motif_list[i]    #reference
+            actual = window[i]          #actual character
+            penalty = penalty_list[i]   
+            #check actual char matches reference
+            if isinstance(expected,set):
+                if actual not in expected:
+                    deviation += penalty
+            else:
+                if actual != expected:
+                    deviation += penalty
+            #end match if exceed max deviation
+            if deviation > max_deviation:
+                return None
+            
+        #check after the gap is encountered
+        for i in range(minimum_gap,max_deviation + 1):
+            deviation_with_gap = 0
+            for j in range(len_part_2):
+                window_pos = star_index + i + j
+                motif_pos = star_index + 1 + j
+                #break if window or motif position exceed the original length
+                if window_pos >= len(window) or motif_pos >= len(motif_list):
+                    break
+                expected = motif_list[motif_pos]    #reference
+                actual = window[window_pos]         #actual character
+                penalty = penalty_list[motif_pos]
+                #check actual char matches reference
+                if isinstance(expected,set):
+                    if actual not in expected:
+                        deviation_with_gap += penalty
+                else:
+                    if actual != expected:
+                        deviation_with_gap += penalty
+                if deviation + deviation_with_gap > max_deviation:
+                    break
+            else:
+                matched_sequence = build_match(window,star_index,i,len_part_2)
+                return deviation + deviation_with_gap,matched_sequence
+        #return None if no valid gap is found
+        return None
+    else:
+        #motif with no gap
+        for i in range(motif_list):
+            expected = motif_list[i]    #reference
+            actual = window[i]          #actual character
+            penalty = penalty_list[i]   
+            #check actual char matches reference
+            if isinstance(expected,set):
+                if actual not in expected:
+                    deviation += penalty
+            else:
+                if actual != expected:
+                    deviation += penalty
+            #end match if exceed max deviation
+            if deviation > max_deviation:
+                return None
+        return deviation,window
+    
+#overal generator
+def find_motif(sequence,motif_list,penalty_list,max_deviation,minimum_gap,maximum_gap):
+
+    #check for gap (star)
+    try:
+        star_index = motif_list.index('*')
+    except ValueError:
+        star_index = None
+
+    #define motif and window length depending on gap
+    motif_len = len(motif_list) - (1 if star_index is not None else 0)
+    max_window = motif_len + (maximum_gap if star_index is not None else 0)
+
+    for i,window in generate_window(sequence,max_window):
+        match_results = check_match(window,motif_list,penalty_list,max_deviation,minimum_gap,maximum_gap)
+        if match_results is not None:
+            deviation, match_sequence = match_results
+            yield (i,deviation,match_sequence)
+
+
+
+        
+
+
+
+
+
+'''
 def find_motif(sequence, motif_list, penalty_list, max_deviation, minimum_gap, maximum_gap):
     """ Generator that searches for motif """
     """ Yields position, deviation and sequence when a match is found """
@@ -78,7 +191,7 @@ def find_motif(sequence, motif_list, penalty_list, max_deviation, minimum_gap, m
     max_window = motif_len + (maximum_gap if star_index is not None else 0)     #add gap to window if it exists
 
     # Start searching for matches
-    for i in range(len(seq_len - max_window + 1)):                            # Search until the remaining seq is not long enough to be the motif
+    for i in range(seq_len - max_window + 1):                            # Search until the remaining seq is not long enough to be the motif
         # reset match
         window = sequence[i:i+max_window]
         deviation = 0
@@ -115,5 +228,4 @@ def find_motif(sequence, motif_list, penalty_list, max_deviation, minimum_gap, m
                         end = star_index + gap_position + len_part_2
                         matched_sequence = window[:star_index] + window[start:end]
                         yield (i,deviation + deviation_gap,matched_sequence)
-
-                        
+'''
