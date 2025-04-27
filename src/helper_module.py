@@ -90,7 +90,6 @@ def load_motif(motif_file):
                     # If not an integer or a range, then the format is invalid
                     else:
                         raise ValueError("Invalid unimportant positions format")
-                        sys.exit(1)
         # Lines with >1 possible character 
         elif len(row[0]) > 1:
             multiple_chars = set()
@@ -173,6 +172,7 @@ def find_motif(sequence, motif_list, penalty_list, max_deviation, minimum_gap, m
                     if deviation > max_deviation:
                         break
 
-        # If the deviation is less than the max, yield the match
+        # If the deviation is less than the max, yield the match within the window
         if deviation <= max_deviation:
-            yield((i, deviation, window))                           # Return the position, deviation and match
+            matched_sequence = window[:star_index] + window[star_index + k:star_index + k + len_part_2]
+            yield((i, deviation, matched_sequence))                           # Return the position, deviation and match
