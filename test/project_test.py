@@ -132,7 +132,7 @@ def test_load_motif_fixed_gap(tmp_path):
     #load temp file
     motif, penalty, min_gap,max_gap = load_motif(str(motif_file))
     assert motif == ['T', 'T', 'G', 'A', 'C', 'A', '*', 'T', 'A', 'T', {'A', 'T'}, 'A', 'T']
-    assert penalty == ['7', '8', '6', '5', '5', '5', '0', '8', '8', '6', '6', '5', '8']
+    assert penalty == ['7', '8', '6', '5', '5', '5', 0, '8', '8', '6', '6', '5', '8']
     assert min_gap == 17
     assert max_gap == 17
 
@@ -150,7 +150,7 @@ def test_load_motif_gap(tmp_path):
     #load temp file
     motif, penalty, min_gap,max_gap = load_motif(str(motif_file))
     assert motif == ['T', 'T', 'G', 'A', 'C', 'A', '*', 'T', 'A', 'T', {'A', 'T'}, 'A', 'T']
-    assert penalty == ['7', '8', '6', '5', '5', '5', '0', '8', '8', '6', '6', '5', '8']
+    assert penalty == ['7', '8', '6', '5', '5', '5', 0, '8', '8', '6', '6', '5', '8']
     assert min_gap == 15
     assert max_gap == 21
 
