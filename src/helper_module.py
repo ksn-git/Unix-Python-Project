@@ -96,11 +96,12 @@ def load_motif(motif_file):
             for char in row[0]:
                 multiple_chars.add(char)
             motif_list.append(multiple_chars)
-            penalty_list.append(row[1])
+            penalty_list.append(int(row[1]))
+                
         # Lines specifying important positions   
         else:
             motif_list.append(row[0])
-            penalty_list.append(row[1])
+            penalty_list.append(int(row[1]))
     infile.close()
     return motif_list, penalty_list, minimum_gap, maximum_gap
 
