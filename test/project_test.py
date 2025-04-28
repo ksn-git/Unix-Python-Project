@@ -103,7 +103,6 @@ def test_get_data_path_file_not_found(tmp_path):
 # no penalty score, no file, totally wrong file type, gap wrong way around
 
 from helper_module import load_motif
-#from helper_module import find_motif
 
 ### load_motif tests
 # correct structure parsing
@@ -204,7 +203,9 @@ def test_load_motif_char_in_penalty(tmp_path):
         load_motif(str(motif_file))
 
 # edge cases
-"""
+
+from test2 import check_deviation,find_motif
+
 #functionality test with gap
 def test_find_motif_with_gap():
     sequence = 'ATCGGACCCACTAGTTTGACAACCTTGAAGGTCGTGGCTATAAT'
@@ -216,7 +217,7 @@ def test_find_motif_with_gap():
     result = list(find_motif(sequence,motif,penalty,max_deviation,minimum_gap,maximum_gap))
     assert result == [(15, 0, 'TTGACAACCTTGAAGGTCGTGGCTATAAT')]
  
-
+"""
 ### find motif generator
 
 #Basic Functionality Test
