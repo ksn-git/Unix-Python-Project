@@ -10,7 +10,7 @@ def check_deviation(window_elem,motif_elem,penalty_elem,deviation,max_deviation)
         if window_elem not in motif_elem:
             deviation += penalty_elem
             if deviation > max_deviation:
-                return deviation, True
+                return deviation, True      #signal stop now
     #if a single charactor is found
     else: 
         if window_elem != motif_elem:
@@ -18,7 +18,7 @@ def check_deviation(window_elem,motif_elem,penalty_elem,deviation,max_deviation)
             if deviation > max_deviation:
                 return deviation, True
     #return False if match continues
-    return deviation, False
+    return deviation, False         #continue match
 
 
 #find motif - not fully functional yet!
@@ -53,41 +53,23 @@ def find_motif(sequence, motif_list, penalty_list, max_deviation, minimum_gap, m
                 for k in range(minimum_gap, maximum_gap + 1): # range should be the length of the 2nd part of the motif
                     # check match for the length of the 2nd part of the motif
                     for m in range(k, k+len_part_2): # maybe minus 1
-                        # If several possible characters
-                        if isinstance(motif_list[j+m-k+1], set):
-                            print(window[j+m], motif_list[j+m-k+1])    
-                            if window[j+m] not in motif_list[j+m-k+1]:  
-                                deviation += int(penalty_list[j+m-k+1]) 
-                                if deviation > max_deviation:
-                                    break
-                        # If one possible character 
-                        else: 
-                            if window[j+m] != motif_list[j+m-k+1]:    
-                                deviation += int(penalty_list[j+m-k+1])  
-                                # If the deviation is larger than the max, break out of the loop
-                                if deviation > max_deviation:
-                                    break
-
+                        # check match and discontinue if exceeding max_deviation
+                        deviation, max_exceeded = check_deviation(window[j+m],motif_list[j+m-k+1], penalty_list[j+m-k+1], deviation, max_deviation)
+                        if max_exceeded:
+                            break
+                    if max_exceeded:
+                            break   
+                    
             # If gap has been reached, the entire window has already been checked
             elif star_index is not None and j >= star_index:
                 # Skip this part if the star/gap has already been encountered
                 continue
-
-            elif isinstance(motif_list[j], set):
-                # If the character is not in the list of possible characters, add penalty score
-                if window[j] not in motif_list[j]:
-                    deviation += int(penalty_list[j])
-                    # If the deviation is larger than the max, break out of the loop
-                    if deviation > max_deviation:
-                        break
-
-            # If one possible character
+            
             else:
-                if window[j] != motif_list[j]:
-                    deviation += int(penalty_list[j])
-                    # If the deviation is larger than the max, break out of the loop
-                    if deviation > max_deviation:
-                        break
+                # check match and discontinue if exceeding max_deviation
+                deviation, max_exceeded = check_deviation(window[j],motif_list[j], penalty_list[j], deviation, max_deviation)
+                if max_exceeded:
+                    break
 
         # If the deviation is less than the max, yield the match within the window
         if deviation <= max_deviation:
