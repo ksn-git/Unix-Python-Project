@@ -8,15 +8,18 @@ def check_deviation(window_elem,motif_elem,penalty_elem,deviation,max_deviation)
     #if multiple charactors are found
     if isinstance(motif_elem,set):
         if window_elem not in motif_elem:
-            deviation += int(penalty_elem)
+            deviation += penalty_elem
+            if deviation > max_deviation:
+                return deviation, True
     #if a single charactor is found
     else: 
         if window_elem != motif_elem:
-            deviation += int(penalty_elem)
-    
-    #boolean set to True if max is exceeded
-    max_exceeded = deviation > max_deviation
-    return deviation, max_exceeded
+            deviation += penalty_elem
+            if deviation > max_deviation:
+                return deviation, True
+    #return False if match continues
+    return deviation, False
+
 
 #find motif - not fully functional yet!
 def find_motif(sequence, motif_list, penalty_list, max_deviation, minimum_gap, maximum_gap):
