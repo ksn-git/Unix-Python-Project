@@ -208,14 +208,14 @@ from test2 import check_deviation,find_motif
 
 #functionality test with gap
 def test_find_motif_with_gap():
-    sequence = 'ATCGGACCCACTAGTTTGACAACCTTGAAGGTCGTGGCTATAAT'
-    motif = ['T', 'T', 'G', 'A', 'C', 'A', '*', 'T', 'A', 'T','A', 'A', 'T']
-    penalty = [7, 8, 6, 5, 5, 5, 0, 8, 8, 6, 6, 5, 8] 
+    sequence = 'TTGCCCCCCTAT'
+    motif = ['T', 'T', 'G', '*', 'T', 'A', 'T']
+    penalty = [7, 8, 6, 0, 5, 5, 5] 
     max_deviation = 10
-    minimum_gap = 17
-    maximum_gap = 17
+    minimum_gap = 3
+    maximum_gap = 7
     result = list(find_motif(sequence,motif,penalty,max_deviation,minimum_gap,maximum_gap))
-    assert result == [(15, 0, 'TTGACAACCTTGAAGGTCGTGGCTATAAT')]
+    assert result == [(0, 0, 'TTGCCCCCCTAT')]
  
 """
 ### find motif generator
