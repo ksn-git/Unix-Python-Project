@@ -217,7 +217,7 @@ def test_find_motif_with_gap():
     result = list(find_motif(sequence,motif,penalty,max_deviation,minimum_gap,maximum_gap))
     assert result == [(0, 0, 'TTG*TAT')]
  
-"""
+
 ### find motif generator
 
 #Basic Functionality Test
@@ -291,4 +291,4 @@ def test_find_motif_empty_motif_and_penalty():
 
 #ensure fasta file
 #meet another star
-"""
+
