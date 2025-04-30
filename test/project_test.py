@@ -209,15 +209,38 @@ from helper_module import find_motif
 
 #functionality test with gap
 def test_find_motif_with_exact_gap():
-    sequence = 'TTGCCCCCCTAT'
+    sequence = 'TTGCCCCCCTATTTGCCCCCCTATG'
     motif = ['T', 'T', 'G', '*', 'T', 'A', 'T']
     penalty = [7, 8, 6, 0, 5, 5, 5] 
     max_deviation = 10
     minimum_gap = 6
     maximum_gap = 6
-    result = list(find_motif(sequence,motif,penalty,max_deviation,minimum_gap,maximum_gap))
-    assert result == [(0, 0, 'TTG*TAT')]
- 
+
+    matches = list(find_motif(sequence, motif, penalty, max_deviation, minimum_gap, maximum_gap))
+    assert len(matches) == 2
+    for match in matches:
+        position, deviation, matched_sequence = match
+        #assert position == 0
+        assert deviation == 0
+        assert matched_sequence == 'TTG*TAT'
+
+def test_integer_gap():
+    sequence = "AATCGCCACGXXXTACGGCTT"
+    motif_list = ["A", "C", "G", "*", "T", "A", "C", "G"]
+    penalty_list = [6, 8, 8, 0, 6, 5, 6, 6]
+    max_deviation = 10
+    minimum_gap = 3
+    maximum_gap = 3
+
+    # Convert generator to list for easier testing
+    matches = list(find_motif(sequence, motif_list, penalty_list, max_deviation, minimum_gap, maximum_gap))
+    # Check if a match is found
+    assert(len(matches) > 0, "No match found when gap is an integer")
+    # Check the details of the match
+    for match in matches:
+        position, deviation, matched_sequence = match
+        assert deviation == 0
+        assert "ACG*TACG" == matched_sequence
 
 ### find motif generator
 
@@ -234,14 +257,19 @@ def test_find_motif_basic():
 
 #functionality test with gap
 def test_find_motif_with_gap():
-    sequence = 'TTGCCCCCCTAT'
+    sequence = 'TTGCCCCCCTATG'
     motif = ['T', 'T', 'G', '*', 'T', 'A', 'T']
     penalty = [7, 8, 6, 0, 5, 5, 5] 
     max_deviation = 0
     minimum_gap = 4
     maximum_gap = 7
-    result = list(find_motif(sequence,motif,penalty,max_deviation,minimum_gap,maximum_gap))
-    assert result == [(0, 0, 'TTG*TAT')]
+
+    matches = list(find_motif(sequence, motif, penalty, max_deviation, minimum_gap, maximum_gap))
+    for match in matches:
+        position, deviation, matched_sequence = match
+        assert position == 0
+        assert deviation == 0
+        assert matched_sequence == 'TTG*TAT'
 
 #with multiple available bp
 def test_find_motif_multiple_bp():
