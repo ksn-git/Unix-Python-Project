@@ -1,7 +1,9 @@
 
 import sys, re, os
 from peter_fasta_class import Fasta
-from helper_module import get_data_path,load_motif,find_motif
+#from helper_module import get_data_path,load_motif,find_motif
+from helper_module import get_data_path,load_motif
+from nye_find import check_deviation,find_motif
 
 # Getting filename with motif from command line
 if len(sys.argv) != 4:                              
