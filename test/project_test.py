@@ -204,8 +204,8 @@ def test_load_motif_char_in_penalty(tmp_path):
 
 # edge cases
 
-from nye_find import check_deviation,find_motif
-#from helper_module import find_motif
+#from nye_find import check_deviation,find_motif
+from helper_module import find_motif
 
 #functionality test with gap
 def test_find_motif_with_exact_gap():
