@@ -153,9 +153,10 @@ def find_motif(sequence, motif_list, penalty_list, max_deviation, minimum_gap, m
                                 # Adjust the printed window to only show the matched part of the sequence
                                 if k != maximum_gap:
                                     substract_from_window = maximum_gap - k
-                                    yield((i, deviation, window[:-substract_from_window]))
+                                    adjusted_window = window[:-substract_from_window]
+                                    yield((i, deviation, window[0:star_index]+"*"+ adjusted_window[-len_part_2:]))
                                 else:
-                                    yield((i, deviation, window))
+                                    yield((i, deviation, window[0:star_index]+"*"+ window[-len_part_2:]))
                                 
 
             # If gap has been reached, the entire window has already been checked
@@ -179,7 +180,7 @@ def find_motif(sequence, motif_list, penalty_list, max_deviation, minimum_gap, m
                     if deviation > max_deviation:
                         break
 
-        # If the deviation is less than the max, yield the match
+        # Yielding matches for sequences without gaps
         if deviation <= max_deviation and star_index is None:
             yield((i, deviation, window))                           # Return the position, deviation and match
 
