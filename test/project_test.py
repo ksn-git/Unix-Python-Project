@@ -204,7 +204,7 @@ def test_load_motif_char_in_penalty(tmp_path):
 
 # edge cases
 
-from test2 import check_deviation,find_motif
+from nye_find import check_deviation,find_motif
 
 #functionality test with gap
 def test_find_motif_with_gap():
@@ -212,8 +212,8 @@ def test_find_motif_with_gap():
     motif = ['T', 'T', 'G', '*', 'T', 'A', 'T']
     penalty = [7, 8, 6, 0, 5, 5, 5] 
     max_deviation = 10
-    minimum_gap = 3
-    maximum_gap = 7
+    minimum_gap = 5
+    maximum_gap = 6
     result = list(find_motif(sequence,motif,penalty,max_deviation,minimum_gap,maximum_gap))
     assert result == [(0, 0, 'TTGCCCCCCTAT')]
  
