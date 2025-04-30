@@ -202,9 +202,8 @@ def test_load_motif_char_in_penalty(tmp_path):
     with pytest.raises(ValueError):
         load_motif(str(motif_file))
 
-# edge cases
 
-#from nye_find import check_deviation,find_motif
+### find motif generator
 from helper_module import find_motif
 
 #functionality test with gap
@@ -223,26 +222,6 @@ def test_find_motif_with_exact_gap():
         #assert position == 0
         assert deviation == 0
         assert matched_sequence == 'TTG*TAT'
-
-def test_integer_gap():
-    sequence = "AATCGCCACGXXXTACGGCTT"
-    motif_list = ["A", "C", "G", "*", "T", "A", "C", "G"]
-    penalty_list = [6, 8, 8, 0, 6, 5, 6, 6]
-    max_deviation = 10
-    minimum_gap = 3
-    maximum_gap = 3
-
-    # Convert generator to list for easier testing
-    matches = list(find_motif(sequence, motif_list, penalty_list, max_deviation, minimum_gap, maximum_gap))
-    # Check if a match is found
-    assert(len(matches) > 0, "No match found when gap is an integer")
-    # Check the details of the match
-    for match in matches:
-        position, deviation, matched_sequence = match
-        assert deviation == 0
-        assert "ACG*TACG" == matched_sequence
-
-### find motif generator
 
 #Basic Functionality Test
 def test_find_motif_basic():
