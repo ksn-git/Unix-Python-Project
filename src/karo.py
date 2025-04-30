@@ -131,7 +131,7 @@ def find_motif(sequence, motif_list, penalty_list, max_deviation, minimum_gap, m
                         if isinstance(motif_list[j+m-k+1], set):
                             if i == 784:
                                 print("j+m", str(j+m), "j+m-k+1", str(j+m-k+1))
-                                #print(window[j+m], motif_list[j+m-k+1])    
+                                print(window[j+m], motif_list[j+m-k+1])    
                             if window[j+m] not in motif_list[j+m-k+1]:  
                                 deviation += int(penalty_list[j+m-k+1]) 
                                 if deviation > max_deviation:
@@ -140,12 +140,23 @@ def find_motif(sequence, motif_list, penalty_list, max_deviation, minimum_gap, m
                         else: 
                             if i == 784:
                                 print("j+m", str(j+m), "j+m-k+1", str(j+m-k+1))
-                                #print(window[j+m], motif_list[j+m-k+1])
+                                print(window[j+m], motif_list[j+m-k+1])
                             if window[j+m] != motif_list[j+m-k+1]:    
                                 deviation += int(penalty_list[j+m-k+1])  
                                 # If the deviation is larger than the max, break out of the loop
                                 if deviation > max_deviation:
                                     break
+                        
+                        # After testing a gap, yield match if the deviation is below the max
+                        if m == k + len_part_2 - 1:
+                            if deviation <= max_deviation:
+                                # Adjust the printed window to only show the matched part of the sequence
+                                if k != maximum_gap:
+                                    substract_from_window = maximum_gap - k
+                                    yield((i, deviation, window[:-substract_from_window]))
+                                else:
+                                    yield((i, deviation, window))
+                                
 
             # If gap has been reached, the entire window has already been checked
             elif star_index is not None and j >= star_index:
@@ -169,7 +180,7 @@ def find_motif(sequence, motif_list, penalty_list, max_deviation, minimum_gap, m
                         break
 
         # If the deviation is less than the max, yield the match
-        if deviation <= max_deviation:
+        if deviation <= max_deviation and star_index is None:
             yield((i, deviation, window))                           # Return the position, deviation and match
 
 
