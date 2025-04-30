@@ -215,7 +215,7 @@ def test_find_motif_with_gap():
     minimum_gap = 5
     maximum_gap = 6
     result = list(find_motif(sequence,motif,penalty,max_deviation,minimum_gap,maximum_gap))
-    assert result == [(0, 0, 'TTGCCCCCCTAT')]
+    assert result == [(0, 0, 'TTG*TAT')]
  
 """
 ### find motif generator

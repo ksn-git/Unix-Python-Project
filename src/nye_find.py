@@ -20,7 +20,7 @@ def check_deviation(window_elem,motif_elem,penalty_elem,deviation,max_deviation)
                 return deviation, True, 'X'
             return deviation, False, window_elem
     #return False if match continues
-    return deviation, False, 'X'         #continue match
+    return deviation, False, window_elem         #continue match
 
 def find_motif(sequence, motif_list, penalty_list, max_deviation, minimum_gap, maximum_gap):
     """Generator that searches for motif.
@@ -44,59 +44,59 @@ def find_motif(sequence, motif_list, penalty_list, max_deviation, minimum_gap, m
             window = sequence[i:i + len(motif_list)]
             match = []
 
-            j = 0
-            while j < len(motif_list):
+            for j in range(len(motif_list)):
                 w = window[j]
                 m = motif_list[j]
                 p = penalty_list[j]
-                deviation, exceeded = check_deviation(w, m, p, deviation, max_deviation)
+                deviation, exceeded, char = check_deviation(w, m, p, deviation, max_deviation)
+                match.append(char)
                 if exceeded:
                     break
-                j += 1
             else:
-                # Only if loop finishes without break
                 success = True
-                matched_seq = window
+                matched_seq = ''.join(match)
 
         else:
             # Gapped motif
-            window = sequence[i:i + len(motif_list) - 1 + maximum_gap]
+            for gap_size in range(minimum_gap, maximum_gap + 1):
+                window = sequence[i:i + len(motif_list) - 1 + gap_size]
+                match = []
+                deviation = 0
+                exceeded = False
 
-            j = 0
-            while j < len(motif_list):
-                if j == star_index:
-                    # Handle gap
-                    for gap_size in range(minimum_gap, maximum_gap + 1):
-                        local_deviation = deviation
-                        exceeded = False
-                        m = 0
-                        while m < len_part_2:
-                            w_idx = j + gap_size + m
-                            motif_idx = j + m + 1
-                            if w_idx >= len(window):
-                                exceeded = True
-                                break
-                            w = window[w_idx]
-                            m_elem = motif_list[motif_idx]
-                            p = penalty_list[motif_idx]
-                            local_deviation, exceeded = check_deviation(w, m_elem, p, local_deviation, max_deviation)
-                            if exceeded:
-                                break
-                            m += 1
-                        if not exceeded:
-                            deviation = local_deviation
-                            matched_seq = window[:star_index] + window[star_index + gap_size: star_index + gap_size + len_part_2]
-                            success = True
-                            break
-                    break  # after handling the gap
-                else:
+                # Before the gap
+                for j in range(star_index):
                     w = window[j]
-                    m_elem = motif_list[j]
+                    m = motif_list[j]
                     p = penalty_list[j]
-                    deviation, exceeded = check_deviation(w, m_elem, p, deviation, max_deviation)
+                    deviation, exceeded, char = check_deviation(w, m, p, deviation, max_deviation)
+                    match.append(char)
                     if exceeded:
                         break
-                j += 1
+
+                if exceeded:
+                    continue
+
+                match.append('*')  # gap symbol
+
+                # After the gap
+                for k in range(len_part_2):
+                    w_idx = star_index + gap_size + k
+                    if w_idx >= len(window):
+                        exceeded = True
+                        break
+                    w = window[w_idx]
+                    m = motif_list[star_index + 1 + k]
+                    p = penalty_list[star_index + 1 + k]
+                    deviation, exceeded, char = check_deviation(w, m, p, deviation, max_deviation)
+                    match.append(char)
+                    if exceeded:
+                        break
+
+                if not exceeded:
+                    success = True
+                    matched_seq = ''.join(match)
+                    break
 
         if success and deviation <= max_deviation:
             print(f"Yielding match at {i}: {matched_seq}, deviation: {deviation}")
