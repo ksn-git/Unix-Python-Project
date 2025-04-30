@@ -116,14 +116,22 @@ def find_motif(sequence, motif_list, penalty_list, max_deviation, minimum_gap, m
             # If gap has been reached 
             # Check match for all gap sizes. Yield if below max deviation
             if j == star_index:
+                deviation_from_first_part = deviation
                 # Range of gaps
                 for k in range(minimum_gap, maximum_gap + 1): # range should be the length of the 2nd part of the motif
                     # check match for the length of the 2nd part of the motif
+                    deviation = deviation_from_first_part
+                    if i == 784:
+                        print("k",k)
+                        print("deviation score", deviation)
                     for m in range(k, k+len_part_2): # maybe minus 1
+                        if i == 784:
+                            print("m", m)
                         # If several possible characters
                         if isinstance(motif_list[j+m-k+1], set):
                             if i == 784:
-                                print(window[j+m], motif_list[j+m-k+1])    
+                                print("j+m", str(j+m), "j+m-k+1", str(j+m-k+1))
+                                #print(window[j+m], motif_list[j+m-k+1])    
                             if window[j+m] not in motif_list[j+m-k+1]:  
                                 deviation += int(penalty_list[j+m-k+1]) 
                                 if deviation > max_deviation:
@@ -131,7 +139,8 @@ def find_motif(sequence, motif_list, penalty_list, max_deviation, minimum_gap, m
                         # If one possible character 
                         else: 
                             if i == 784:
-                                print(window[j+m], motif_list[j+m-k+1])
+                                print("j+m", str(j+m), "j+m-k+1", str(j+m-k+1))
+                                #print(window[j+m], motif_list[j+m-k+1])
                             if window[j+m] != motif_list[j+m-k+1]:    
                                 deviation += int(penalty_list[j+m-k+1])  
                                 # If the deviation is larger than the max, break out of the loop

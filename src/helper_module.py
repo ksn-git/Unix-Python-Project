@@ -78,30 +78,36 @@ def load_motif(motif_file):
                 # If there is a range of unimportant positions
                     result = re.search(r"(\d+)-(\d+)", gap_positions)
                     if result is not None:
-                        minimum_gap = int(result.group(1))
-                        maximum_gap = int(result.group(2))
+                        pos1 = int(result.group(1))
+                        pos2 = int(result.group(2))
+                        minimum_gap = min(pos1,pos2)
+                        maximum_gap = max(pos1,pos2)
+                        if pos1 != minimum_gap or pos2 != maximum_gap:
+                            print(f'The position of the minimum and maximum gap has been switched from [{pos1}:{pos2}] to [{minimum_gap}:{maximum_gap}]')
+
                         motif_list.append("*")
                         penalty_list.append(0)
                     # If not an integer or a range, then the format is invalid
                     else:
                         raise ValueError("Invalid unimportant positions format")
-                        sys.exit(1)
         # Lines with >1 possible character 
         elif len(row[0]) > 1:
             multiple_chars = set()
             for char in row[0]:
                 multiple_chars.add(char)
             motif_list.append(multiple_chars)
-            penalty_list.append(row[1])
+            try: penalty_list.append(int(row[1]))
+            except ValueError as err: print(f"penalty need to be 'int' and not {err}")
+                
         # Lines specifying important positions   
         else:
             motif_list.append(row[0])
-            penalty_list.append(row[1])
+            try: penalty_list.append(int(row[1]))
+            except ValueError as err: print(f"penalty need to be 'int' and not {err}")
     infile.close()
     return motif_list, penalty_list, minimum_gap, maximum_gap
 
-
-
+#find motif - not fully functional yet!
 def find_motif(sequence, motif_list, penalty_list, max_deviation, minimum_gap, maximum_gap):
     """ Generator that searches for motif """
     """ Yields position, deviation and sequence when a match is found """
@@ -122,28 +128,20 @@ def find_motif(sequence, motif_list, penalty_list, max_deviation, minimum_gap, m
         # If there are gaps in the motif, window is the motif length + maximum number of gaps in motif. 
         # Subtract 1 because there is a star character in the motif list denoting gaps
         else:
-            window = sequence[i:(i + len(motif_list) -1 + maximum_gap)]                # Window of the same length as the longest possible motif. Len = 29
+            window = sequence[i:(i + len(motif_list) - 1 + maximum_gap)]                # Window of the same length as the longest possible motif. Len = 29
         # Reset deviation score and search window for motif
         deviation = 0
         for j in range(len(window)):
             # If gap has been reached 
             # Check match for all gap sizes. Yield if below max deviation
-
-            # skip min amount of stars, then min +1 ... up to max amount of starts
-            # motif list should have one star 
-            # while motif list is still long enough, check if equal to window
-
-            # For gap = 17: k = 17, m = [17-23], j = 6. these are human indices/lengths, not python indices! Change this in code
-            # If the motif contains a gap / star and it has been reached
-            # If TTCAGA*, then j = 6 when star is reached
             if j == star_index:
-                # Range of gaps, e.g. 15, 16, 17
+                # Range of gaps
                 for k in range(minimum_gap, maximum_gap + 1): # range should be the length of the 2nd part of the motif
                     # check match for the length of the 2nd part of the motif
-                    for m in range(k, k+len_part_2 - 1):
-                        print(f"Checking window index: {j + m}")
+                    for m in range(k, k+len_part_2): # maybe minus 1
                         # If several possible characters
-                        if isinstance(motif_list[j+m-k+1], set):    
+                        if isinstance(motif_list[j+m-k+1], set):
+                            print(window[j+m], motif_list[j+m-k+1])    
                             if window[j+m] not in motif_list[j+m-k+1]:  
                                 deviation += int(penalty_list[j+m-k+1]) 
                                 if deviation > max_deviation:
@@ -177,6 +175,7 @@ def find_motif(sequence, motif_list, penalty_list, max_deviation, minimum_gap, m
                     if deviation > max_deviation:
                         break
 
-        # If the deviation is less than the max, yield the match
+        # If the deviation is less than the max, yield the match within the window
         if deviation <= max_deviation:
-            yield((i, deviation, window))
+            matched_sequence = window[:star_index] + window[star_index + k:star_index + k + len_part_2]
+            yield((i, deviation, matched_sequence))                           # Return the position, deviation and match

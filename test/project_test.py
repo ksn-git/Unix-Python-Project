@@ -102,8 +102,7 @@ def test_get_data_path_file_not_found(tmp_path):
 #unittest needs: what if no gap, no motif after, no motif before,
 # no penalty score, no file, totally wrong file type, gap wrong way around
 
-#from helper_module import load_motif, find_motif
-from test import load_motif
+from helper_module import load_motif
 
 ### load_motif tests
 # correct structure parsing
@@ -115,7 +114,7 @@ def test_load_motif_basic(tmp_path):
     #load temp file
     motif, penalty, min_gap,max_gap = load_motif(str(motif_file))
     assert motif == ['A', 'T', 'C', 'G']
-    assert penalty == ['8', '7', '6', '5']
+    assert penalty == [8, 7, 6, 5]
     assert min_gap == 0
     assert max_gap == 0
 
@@ -133,7 +132,7 @@ def test_load_motif_fixed_gap(tmp_path):
     #load temp file
     motif, penalty, min_gap,max_gap = load_motif(str(motif_file))
     assert motif == ['T', 'T', 'G', 'A', 'C', 'A', '*', 'T', 'A', 'T', {'A', 'T'}, 'A', 'T']
-    assert penalty == ['7', '8', '6', '5', '5', '5', 0, '8', '8', '6', '6', '5', '8']
+    assert penalty == [7, 8, 6, 5, 5, 5, 0, 8, 8, 6, 6, 5, 8]
     assert min_gap == 17
     assert max_gap == 17
 
@@ -151,7 +150,7 @@ def test_load_motif_gap(tmp_path):
     #load temp file
     motif, penalty, min_gap,max_gap = load_motif(str(motif_file))
     assert motif == ['T', 'T', 'G', 'A', 'C', 'A', '*', 'T', 'A', 'T', {'A', 'T'}, 'A', 'T']
-    assert penalty == ['7', '8', '6', '5', '5', '5', 0, '8', '8', '6', '6', '5', '8']
+    assert penalty == [7, 8, 6, 5, 5, 5, 0, 8, 8, 6, 6, 5, 8]
     assert min_gap == 15
     assert max_gap == 21
 
@@ -174,21 +173,49 @@ def test_load_motif_switched_gap(tmp_path):
     assert max_gap == 21
 
 #gap has invalid characters
+def test_load_motif_char_in_gap(tmp_path):
+    #temp file
+    motif_file = tmp_path / 'motif_gap_fixed.txt'
+    motif_file.write_text(
+        "# -35 element\nT\t7\nT\t8\nG\t6\nA\t5\nC\t5\nA\t5\n"
+        "# intervening unimportant bases\n"
+        "*\t21-a\n"
+        "# -10 element\n"
+        "T\t8\nA\t8\nT\t6\nAT\t6\nA\t5\nT\t8\n")
 
+    #test ValueError
+    with pytest.raises(ValueError):
+        load_motif(str(motif_file))
 
+# invalid penalty score
+def test_load_motif_char_in_penalty(tmp_path):
+    #temp file
+    motif_file = tmp_path / 'motif_gap_fixed.txt'
+    motif_file.write_text(
+        "# -35 element\nT\t7\nT\t8\nG\t6\nA\t5\nC\t5\nA\t5\n"
+        "# intervening unimportant bases\n"
+        "*\t21-a\n"
+        "# -10 element\n"
+        "T\t8\nA\tA\nT\t6\nAT\t6\nA\t5\nT\t8\n")
+
+    #test ValueError
+    with pytest.raises(ValueError):
+        load_motif(str(motif_file))
 
 # edge cases
-"""
+
+from nye_find import check_deviation,find_motif
+
 #functionality test with gap
 def test_find_motif_with_gap():
-    sequence = 'ATCGGACCCACTAGTTTGACAACCTTGAAGGTCGTGGCTATAAT'
-    motif = ['T', 'T', 'G', 'A', 'C', 'A', '*', 'T', 'A', 'T','A', 'A', 'T']
-    penalty = ['7', '8', '6', '5', '5', '5', 0, '8', '8', '6', '6', '5', '8'] 
+    sequence = 'TTGCCCCCCTAT'
+    motif = ['T', 'T', 'G', '*', 'T', 'A', 'T']
+    penalty = [7, 8, 6, 0, 5, 5, 5] 
     max_deviation = 10
-    minimum_gap = 17
-    maximum_gap = 17
+    minimum_gap = 5
+    maximum_gap = 6
     result = list(find_motif(sequence,motif,penalty,max_deviation,minimum_gap,maximum_gap))
-    assert result == [(15, 0, 'TTGACAACCTTGAAGGTCGTGGCTATAAT')]
+    assert result == [(0, 0, 'TTG*TAT')]
  
 
 ### find motif generator
@@ -264,4 +291,4 @@ def test_find_motif_empty_motif_and_penalty():
 
 #ensure fasta file
 #meet another star
-"""
+
