@@ -34,22 +34,52 @@ def find_motif(sequence, motif_list, penalty_list, max_deviation, minimum_gap, m
     # If no gaps in motif, ignore
     except ValueError:
         star_index = None
+        len_part_2 = 0
         print("No gap (star) found in motif.")
 
+    #define motif length (gap or no gap)
+    motif_core_length = len(motif_list) - (1 if star_index is not None else 0)
+
     # Start searching for matches
-    for i in range(0, len(sequence) - len(motif_list) - maximum_gap + 1):           # Search until the remaining seq is not long enough to be the motif
+    for i in range(len(sequence) - motif_core_length - maximum_gap + 1):           # Search until the remaining seq is not long enough to be the motif
         print(f"\nChecking window starting at position {i}")
         # If no gaps in the motif, window is the same length as the motif
-        if minimum_gap == 0 and maximum_gap == 0:
+        if star_index is None:
             window = sequence[i:(i + len(motif_list))]                
         # If there are gaps in the motif, window is the motif length + maximum number of gaps in motif. 
         # Subtract 1 because there is a star character in the motif list denoting gaps
         else:
-            window = sequence[i:(i + len(motif_list) - 1 + maximum_gap)]                # Window of the same length as the longest possible motif. Len = 29
+            window = sequence[i:i + len(motif_list) - 1 + maximum_gap]                # Window of the same length as the longest possible motif. Len = 29
         print(f"Window: {window}")
 
         # Reset deviation score and search window for motif
         deviation = 0
+        success = False     #??? 
+
+        # motif with no gap
+        if star_index is None:
+            index = 0
+            while index < len(motif_list):
+                win = window[index]
+                motif = motif_list[index]
+                penalty = penalty_list[index]
+                deviation, max_exceeded = check_deviation(win,motif,penalty,deviation, max_deviation)
+                if max_exceeded:
+                    break
+                index += 1
+            else:
+                success = True
+                matched_sequence = window
+        else:
+            # motif with gap
+            for gap_size in range(minimum_gap,maximum_gap + 1):
+                temp_deviation = deviation  #try new deviation
+                failed = False
+
+                # motif before gap 
+                for 
+
+
         for j in range(len(window)):
             print(f"Checking position {j}, motif element: {motif_list[j]} vs window element: {window[j]}")
 
@@ -66,11 +96,11 @@ def find_motif(sequence, motif_list, penalty_list, max_deviation, minimum_gap, m
 
                         # check match and discontinue if exceeding max_deviation
                         deviation, max_exceeded = check_deviation(window[j+m],motif_list[j+m-k+1], penalty_list[j+m-k+1], deviation, max_deviation)
-                        print("Max deviation exceeded, breaking out of gap checking loop.")
-
                         if max_exceeded:
                             break  
-                    
+                    if max_exceeded:
+                        break
+
             # If gap has been reached, the entire window has already been checked
             elif star_index is not None and j >= star_index:
                 # Skip this part if the star/gap has already been encountered
