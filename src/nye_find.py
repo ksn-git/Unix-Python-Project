@@ -127,13 +127,13 @@ def find_motif(sequence, motif_list, penalty_list, max_deviation, minimum_gap, m
 
     # Start searching for matches
     for i in range(0, len(sequence) - len(motif_list) - maximum_gap + 1):           # Search until the remaining seq is not long enough to be the motif
-        # If no gaps in the motif, window is the same length as the motif
-        if minimum_gap == 0 and maximum_gap == 0:
-            window = sequence[i:(i + len(motif_list))]                
-        # If there are gaps in the motif, window is the motif length + maximum number of gaps in motif. 
-        # Subtract 1 because there is a star character in the motif list denoting gaps
+        
+        #calculate window length (with or without gap)
+        if star_index is not None:
+            window = len(motif_list) - 1 + minimum_gap
         else:
-            window = sequence[i:(i + len(motif_list) - 1 + maximum_gap)]                # Window of the same length as the longest possible motif. Len = 29
+            window = len(motif_list)
+        
         # Reset deviation score and search window for motif
         deviation = 0
 
@@ -168,11 +168,9 @@ def find_motif(sequence, motif_list, penalty_list, max_deviation, minimum_gap, m
                                 if k != maximum_gap:
                                     substract_from_window = maximum_gap - k
                                     adjusted_window = window[:-substract_from_window]
-                                    matched_seq = window[0:star_index]+"*"+ adjusted_window[-len_part_2:]
-                                    yield((i, deviation,matched_seq))
+                                    yield((i, deviation, window[0:star_index]+"*"+ adjusted_window[-len_part_2:]))
                                 else:
-                                    matched_seq = window[0:star_index]+"*"+ window[-len_part_2:]
-                                    yield((i, deviation, matched_seq))
+                                    yield((i, deviation, window[0:star_index]+"*"+ window[-len_part_2:]))
                                 
 
             # If gap has been reached, the entire window has already been checked
