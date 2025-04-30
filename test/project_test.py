@@ -205,9 +205,10 @@ def test_load_motif_char_in_penalty(tmp_path):
 # edge cases
 
 from nye_find import check_deviation,find_motif
+#from helper_module import find_motif
 
 #functionality test with gap
-def test_find_motif_with_gap():
+def test_find_motif_with_exact_gap():
     sequence = 'TTGCCCCCCTAT'
     motif = ['T', 'T', 'G', '*', 'T', 'A', 'T']
     penalty = [7, 8, 6, 0, 5, 5, 5] 
@@ -233,20 +234,19 @@ def test_find_motif_basic():
 
 #functionality test with gap
 def test_find_motif_with_gap():
-    sequence = 'ATCGGACCCACTAGT'
-    motif = ['A','T','C','G','G','A','*','A','G','T','C','G','T']
-    penalty = [8,7,6,7,8,9,0,8,7,6,9,8,4] 
-    max_deviation = 18
-    minimum_gap = 0
-    maximum_gap = 2
+    sequence = 'TTGCCCCCCTAT'
+    motif = ['T', 'T', 'G', '*', 'T', 'A', 'T']
+    penalty = [7, 8, 6, 0, 5, 5, 5] 
+    max_deviation = 0
+    minimum_gap = 4
+    maximum_gap = 7
     result = list(find_motif(sequence,motif,penalty,max_deviation,minimum_gap,maximum_gap))
-    assert result == [(0,16,'ATCGGA*ACTAGT')]
-
+    assert result == [(0, 0, 'TTG*TAT')]
 
 #with multiple available bp
 def test_find_motif_multiple_bp():
     sequence = 'CGCCTATAATAAT'
-    motif = ['T','A','T','A','AT','T']
+    motif = ['T','A','T','A', {'A','T'},'T']
     penalty = [8,8,6,6,5,8]
     max_deviation = 0
     minimum_gap = 0
@@ -256,14 +256,14 @@ def test_find_motif_multiple_bp():
 
 #Penalty Application Test (need testing)
 def test_find_motif_penalty():
-    sequence = 'CGCCTATCATTATCCT'
+    sequence = 'CGCCTATCAT'
     motif = ['T','A','T','A','A','T']
     penalty = [8,8,6,6,5,8]
     max_deviation = 8
     minimum_gap = 0
     maximum_gap = 0
     result = list(find_motif(sequence,motif,penalty,max_deviation,minimum_gap,maximum_gap))
-    assert result == [(4,8,'TATCAT')]
+    assert result == [(4,6,'TATCAT')]
 
 ## Edge Case Test
 #empty sequence
@@ -285,20 +285,19 @@ def test_find_motif_empty_motif_and_penalty():
     max_deviation = 0
     minimum_gap = 0
     maximum_gap = 0
-    result = list(find_motif(sequence,motif,penalty,max_deviation,minimum_gap,maximum_gap))
-    assert result == []
-
-
+    with pytest.raises(ValueError):
+        result = list(find_motif(sequence,motif,penalty,max_deviation,minimum_gap,maximum_gap))
+    
 #empty penalty score
-def test_find_motif_empty_motif_and_penalty():
+def test_find_motif_empty_penalty():
     sequence = 'CGCCTATAATAAT'
     motif = ['T','A','T','A','A','T']
     penalty = []
     max_deviation = 0
     minimum_gap = 0
     maximum_gap = 0
-    result = list(find_motif(sequence,motif,penalty,max_deviation,minimum_gap,maximum_gap))
-    assert result == []
+    with pytest.raises(ValueError):
+        result = list(find_motif(sequence,motif,penalty,max_deviation,minimum_gap,maximum_gap))
 
 #ensure fasta file
 #meet another star

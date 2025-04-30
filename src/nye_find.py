@@ -26,6 +26,10 @@ def find_motif(sequence, motif_list, penalty_list, max_deviation, minimum_gap, m
     """Generator that searches for motif.
     Yields (position, deviation, matched_sequence) when a match is found."""
 
+    #check if motif and penalty length match
+    if len(motif_list) != len(penalty_list) or motif_list == []:
+        raise ValueError('The list of the motif or the penalty is not the same length or both are empty.')
+
     try:
         star_index = motif_list.index("*")
         len_part_2 = len(motif_list) - star_index - 1
