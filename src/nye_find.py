@@ -10,15 +10,17 @@ def check_deviation(window_elem,motif_elem,penalty_elem,deviation,max_deviation)
         if window_elem not in motif_elem:
             deviation += penalty_elem
             if deviation > max_deviation:
-                return deviation, True      #signal stop now
+                return deviation, True,'X'      #signal stop now
+            return deviation, False, window_elem
     #if a single charactor is found
     else: 
         if window_elem != motif_elem:
             deviation += penalty_elem
             if deviation > max_deviation:
-                return deviation, True
+                return deviation, True, 'X'
+            return deviation, False, window_elem
     #return False if match continues
-    return deviation, False         #continue match
+    return deviation, False, 'X'         #continue match
 
 def find_motif(sequence, motif_list, penalty_list, max_deviation, minimum_gap, maximum_gap):
     """Generator that searches for motif.
@@ -40,6 +42,7 @@ def find_motif(sequence, motif_list, penalty_list, max_deviation, minimum_gap, m
         if star_index is None:
             # No gaps in motif
             window = sequence[i:i + len(motif_list)]
+            match = []
 
             j = 0
             while j < len(motif_list):
