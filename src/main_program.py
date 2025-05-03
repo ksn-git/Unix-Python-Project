@@ -1,6 +1,10 @@
 #!/bin/env python3
 
 ### Get imports and arguments from commandline
+#example of use with our files on cmd
+# ./main_program.py motif.txt sequence.fsa 20 data matched_seq.txt
+# python3 main_program.py motif.txt sequence.fsa 20 data matched_seq.txt
+
 # Dependencies
 import sys
 from peter_fasta_class import Fasta
@@ -14,7 +18,7 @@ if len(sys.argv) != 6:
     print("Usage: python3 main_program.py <motif> <fastafile> <max deviation> <filedir> <save_as_file>")
     sys.exit(1)
 
-# Unpack arguments (use ./script.py... or python3 script.py... in cmd)
+# Unpack arguments 
 motif,fasta_file,max_deviation,subdir,save_as_file = sys.argv[1:]                              
 
 # Check and update max_deviation data type
