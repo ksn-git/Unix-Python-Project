@@ -40,14 +40,6 @@ motif_file = get_data_path(motif,subdir=subdir)
 motif_list, penalty_list, minimum_gap, maximum_gap = load_motif(motif_file)
 #print(motif_list, penalty_list, minimum_gap, maximum_gap)      #debug statement
 
-#get matches using find_motif (print statement)
-print("Matches are listed as (start position, penalty score, match)")
-print("The header corresponding to the match is printed immediately before the match")
-for header, sequence in fasta:
-    for match in find_motif(sequence, motif_list, penalty_list, max_deviation, minimum_gap, maximum_gap):
-        print(header)
-        print(match)
-
 #add matches into dict
 output = {}
 for header,sequence in fasta:
@@ -62,13 +54,18 @@ for header,sequence in fasta:
 outputfile = get_data_path(save_as_file,subdir,must_exist = False)
 with open(outputfile,'w') as outfile:
     #add comment(s) to file
-    outfile.write("# Matches are listed as (start position, penalty score, match)")
-    outfile.write("# The header corresponding to the match is printed immediately before the match")
+    outfile.write("# Matches are listed as (start position, penalty score, match)\n")
+    outfile.write("# The header corresponding to the match is printed immediately before the match\n")
+    #print to terminal
+    print("Matches are listed as (start position, penalty score, match)")
+    print("The header corresponding to the match is printed immediately before the match")
     #add content
     for header,matches in output.items():
-        outfile.write(header + '\n')
+        outfile.write(header + '\n')    #add to outfile
+        print(header)                   #print to terminal
         for pos,dev,mstr in matches:
-            outfile.write(f'{pos}\t{dev}\t{mstr}\n')
+            outfile.write(f'{pos}\t{dev}\t{mstr}\n')    #add to outfile
+            print(f'({pos},{dev},{mstr})')              #print to terminal
 print(f'Output has been saved in: {save_as_file}')
 
 
