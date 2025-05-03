@@ -30,7 +30,7 @@ def add_to_sys_path(relative_path_from_root: str):
     
 
 #add file path ('data' is the default directive for the data)
-def get_data_path(filename,data = 'data'):
+def get_data_path(filename,subdir = 'data',must_exist = 'True'):
     """Finds full data path in directory"""
 
     #find current path
@@ -38,11 +38,11 @@ def get_data_path(filename,data = 'data'):
     #go back and look at project root
     project_root = os.path.dirname(os.path.dirname(current_file))
     #return full path
-    full_path = os.path.join(project_root, data, filename)
+    full_path = os.path.join(project_root, subdir, filename)
 
     #check if file exist
-    if not os.path.isfile(full_path):
-        raise FileNotFoundError(f'File {filename} does not exist at path {full_path}')
+    if must_exist and not os.path.isfile(full_path):
+        raise FileNotFoundError(f'File: "{filename}" does not exist at path: "{full_path}"')
     
     return full_path
 
