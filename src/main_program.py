@@ -62,7 +62,8 @@ for header,sequence in fasta:
 outputfile = get_data_path(save_as_file,subdir,must_exist = False)
 with open(outputfile,'w') as outfile:
     #add comment(s) to file
-    outfile.write('# Matches listed using format: (start, deviation, match)\n')
+    outfile.write("# Matches are listed as (start position, penalty score, match)")
+    outfile.write("# The header corresponding to the match is printed immediately before the match")
     #add content
     for header,matches in output.items():
         outfile.write(header + '\n')

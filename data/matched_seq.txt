@@ -1,5 +1,4 @@
-# Matches listed using format: (start, deviation, match)
->gnl|ti|1270769347 name:AWGF1001.x1 mate:1270769348
+# Matches are listed as (start position, penalty score, match)# The header corresponding to the match is printed immediately before the match>gnl|ti|1270769347 name:AWGF1001.x1 mate:1270769348
 930	18	XTGACX*TAXGAAT
 >gnl|ti|1270769348 name:AWGF1001.y1 mate:1270769347
 92	14	TTGACA*TXCXAAAT
