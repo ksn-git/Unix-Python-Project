@@ -16,7 +16,7 @@ if src_path not in sys.path:
     sys.path.insert(0,src_path)
 
 #import functions
-from helper_module import add_to_sys_path,get_data_path
+from functions import add_to_sys_path,get_data_path
 
 ### test sys_to_path from helper_module 
 # using mock to isolate a piece of the code without dependecies
@@ -102,7 +102,7 @@ def test_get_data_path_file_not_found(tmp_path):
 #unittest needs: what if no gap, no motif after, no motif before,
 # no penalty score, no file, totally wrong file type, gap wrong way around
 
-from helper_module import load_motif
+from functions import load_motif
 
 ### load_motif tests
 # correct structure parsing
@@ -204,7 +204,7 @@ def test_load_motif_char_in_penalty(tmp_path):
 
 
 ### find motif generator
-from helper_module import find_motif
+from functions import find_motif
 
 #functionality test with gap
 def test_find_motif_with_exact_gap():
