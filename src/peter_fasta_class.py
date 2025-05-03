@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # Exercise 7-8
 # Peter's Fasta class and get_data_path 
-from helper_module import get_data_path
+from functions import get_data_path
 
 
 class Fasta:

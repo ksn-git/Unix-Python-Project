@@ -8,7 +8,7 @@
 # Dependencies
 import sys
 from peter_fasta_class import Fasta
-from helper_module import get_data_path,load_motif,find_motif
+from functions import get_data_path,load_motif,find_motif
 
 # Check length of arguments
 if len(sys.argv) != 6:
