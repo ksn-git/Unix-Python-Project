@@ -1,37 +1,42 @@
+#!/bin/env python3
 
-import sys, re, os
+### Get imports and arguments from commandline
+# Dependencies
+import sys
 from peter_fasta_class import Fasta
-#from helper_module import get_data_path,load_motif,find_motif
 from helper_module import get_data_path,load_motif,find_motif
-#from nye_find import check_deviation,find_motif
 
-# Getting filename with motif from command line
-if len(sys.argv) != 4:                              
-    if len(sys.argv) == 1:
-        motif = input("Please enter the name of the file with the motif to look for: ")
-        fasta_file = input("Please enter the name of the fasta file to search in: ")
-        max_deviation = int(input("Please enter the maximum deviation (int): "))
-    else:
-        print("You must supply a file name with a motif to look for")
-        print("Usage: <main_program.py> <motif> <fastafile> <max deviation>")
-        sys.exit(1)
-else:
-    motif = sys.argv[1]                              
-    fasta_file = sys.argv[2]
-    max_deviation = int(sys.argv[3])
+# Check length of arguments
+if len(sys.argv) != 6:
+    print("You must supply all needed inputs. Either:")
+    print("Usage: ./main_program.py <motif> <fastafile> <max deviation> <filedir> <save_as_file>")
+    print("or")
+    print("Usage: python3 main_program.py <motif> <fastafile> <max deviation> <filedir> <save_as_file>")
+    sys.exit(1)
 
+# Unpack arguments (use ./script.py... or python3 script.py... in cmd)
+motif,fasta_file,max_deviation,subdir,save_as_file = sys.argv[1:]                              
+
+# Check and update max_deviation data type
+try:
+    max_deviation = int(max_deviation)
+except ValueError:
+    print(f'max_deviation must an integer and got: {max_deviation}')
+    sys.exit(1)
+
+### Usage of code 
 # Loading and verifying the fasta file 
 fasta = Fasta()
-fasta.load(fasta_file)                           
+fasta.load(fasta_file,subdir=subdir)   
 fasta.verify("dnax")     
 
-# Opening the motif description file. Works if the file is in a "data" subfolder. 
-motif_file = get_data_path(motif)       
+# Opening the motif description file. Works if the file is in subdir argument or default:"data" subfolder. 
+motif_file = get_data_path(motif,subdir=subdir)       
 # Load motif and save the function output
 motif_list, penalty_list, minimum_gap, maximum_gap = load_motif(motif_file)
-print(motif_list, penalty_list, minimum_gap, maximum_gap)
+#print(motif_list, penalty_list, minimum_gap, maximum_gap)      #debug statement
 
-#get matches using find_motif
+#get matches using find_motif (print statement)
 print("Matches are listed as (start position, penalty score, match)")
 print("The header corresponding to the match is printed immediately before the match")
 for header, sequence in fasta:
@@ -39,7 +44,28 @@ for header, sequence in fasta:
         print(header)
         print(match)
 
+#add matches into dict
+output = {}
+for header,sequence in fasta:
+    #add new fasta headers
+    if header not in output:
+        output[header] = []
+    #append matches
+    for match in find_motif(sequence, motif_list, penalty_list, max_deviation, minimum_gap, maximum_gap):
+        output[header].append(match)
 
-#for match in find_motif(fasta.sequences[1], motif_list, penalty_list, max_deviation):
-#        print(match)
+#read headers and matches into file
+outputfile = get_data_path(save_as_file,subdir,must_exist = False)
+with open(outputfile,'w') as outfile:
+    #add comment(s) to file
+    outfile.write('# Matches listed using format: (start, deviation, match)\n')
+    #add content
+    for header,matches in output.items():
+        outfile.write(header + '\n')
+        for pos,dev,mstr in matches:
+            outfile.write(f'{pos}\t{dev}\t{mstr}\n')
+print(f'Output has been saved in: {save_as_file}')
+
+
+
 
