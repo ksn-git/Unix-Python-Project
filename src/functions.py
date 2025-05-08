@@ -160,23 +160,19 @@ def find_motif(sequence, motif_list, penalty_list, max_deviation, minimum_gap, m
                             valid = False
                             break
 
-                        #update current index
-                        current_char = window[window_index]
-                        expected = motif_list[motif_index]
-
                         # If several possible characters
                         if isinstance(motif_list[motif_index], set):    
-                            if current_char not in expected:  
+                            if window[window_index] not in motif_list[motif_index]:  
                                 deviation += int(penalty_list[motif_index]) 
                                 match_str_2 += 'X'
                                 if deviation > max_deviation:
                                     valid = False
                                     break
                             else:
-                                match_str_2 += current_char
+                                match_str_2 += window[window_index]
                         # If one possible character 
                         else: 
-                            if current_char != expected:    
+                            if window[window_index] != motif_list[motif_index]:    
                                 deviation += int(penalty_list[motif_index]) 
                                 match_str_2 += 'X' 
                                 # If the deviation is larger than the max, break out of the loop
@@ -184,7 +180,7 @@ def find_motif(sequence, motif_list, penalty_list, max_deviation, minimum_gap, m
                                     valid = False
                                     break
                             else:
-                                match_str_2 += current_char
+                                match_str_2 += window[window_index]
                         
                         # yield match if still valid match, correct length of match and acceptable deviation
                         if valid and len(match_str_2) == len_part_2 and deviation <= max_deviation:
