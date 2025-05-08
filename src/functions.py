@@ -107,7 +107,7 @@ def load_motif(motif_file):
                 raise ValueError(f"Penalty must be an integer, got '{row[1]}' instead.") from err                
     infile.close()
     return motif_list, penalty_list, minimum_gap, maximum_gap
-
+#'''
 def find_motif(sequence, motif_list, penalty_list, max_deviation, minimum_gap, maximum_gap):
     """ Generator that searches for motif """
     """ Yields position, deviation and sequence when a match is found """
@@ -148,31 +148,46 @@ def find_motif(sequence, motif_list, penalty_list, max_deviation, minimum_gap, m
                     # check match for the length of the 2nd part of the motif
                     deviation = deviation_from_first_part
                     match_str_2 = ''
-                    for m in range(k, k+len_part_2): # maybe minus 1
-                        motif_index = j + m - k + 1
-                        if m >= len(window):
-                            break       #avoids index out of range
+                    #flag to indicate state of match with gap
+                    valid = True        
+
+                    for m in range(len_part_2): 
+                        motif_index = star_index + m + 1
+                        window_index = star_index + k + m
+
+                        #break loop if exceeding window or motif
+                        if window_index >= len(window) or motif_index >= len(motif_list):
+                            valid = False
+                            break
+
+                        #update current index
+                        current_char = window[window_index]
+                        expected = motif_list[motif_index]
+
                         # If several possible characters
                         if isinstance(motif_list[motif_index], set):    
-                            if window[j+m] not in motif_list[motif_index]:  
+                            if current_char not in expected:  
                                 deviation += int(penalty_list[motif_index]) 
                                 match_str_2 += 'X'
                                 if deviation > max_deviation:
+                                    valid = False
                                     break
                             else:
-                                match_str_2 += window[j+m]
+                                match_str_2 += current_char
                         # If one possible character 
                         else: 
-                            if window[j+m] != motif_list[motif_index]:    
+                            if current_char != expected:    
                                 deviation += int(penalty_list[motif_index]) 
                                 match_str_2 += 'X' 
                                 # If the deviation is larger than the max, break out of the loop
                                 if deviation > max_deviation:
+                                    valid = False
                                     break
-                            match_str_2 += window[j+m]
+                            else:
+                                match_str_2 += current_char
                         
-                        # After testing a gap, yield match if the deviation is below the max
-                        if m == k + len_part_2 - 1 and deviation <= max_deviation:
+                        # yield match if still valid match, correct length of match and acceptable deviation
+                        if valid and len(match_str_2) == len_part_2 and deviation <= max_deviation:
                             yield((i, deviation, match_str_1 + "*" + match_str_2))           
 
             # If gap has been reached, the entire window has already been checked
