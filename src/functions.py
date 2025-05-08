@@ -107,7 +107,7 @@ def load_motif(motif_file):
                 raise ValueError(f"Penalty must be an integer, got '{row[1]}' instead.") from err                
     infile.close()
     return motif_list, penalty_list, minimum_gap, maximum_gap
-#'''
+
 def find_motif(sequence, motif_list, penalty_list, max_deviation, minimum_gap, maximum_gap):
     """ Generator that searches for motif """
     """ Yields position, deviation and sequence when a match is found """
