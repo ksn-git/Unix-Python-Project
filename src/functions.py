@@ -118,7 +118,7 @@ def find_motif(sequence, motif_list, penalty_list, max_deviation, minimum_gap, m
 
     # Find start position of gap and length of 2nd part of the motif
     try:
-        star_index = motif_list.index("*")      
+        star_index = motif_list.index("*")     
         len_part_2 = len(motif_list) - star_index - 1
     # If no gaps in motif, ignore
     except ValueError:
@@ -141,12 +141,11 @@ def find_motif(sequence, motif_list, penalty_list, max_deviation, minimum_gap, m
             # If gap has been reached 
             # Check match for all gap sizes. Yield if below max deviation
             if j == star_index:
-                deviation_from_first_part = deviation
                 match_str_1 = match_str
                 # Range of gaps
                 for k in range(minimum_gap, maximum_gap + 1): # range should be the length of the 2nd part of the motif
                     # check match for the length of the 2nd part of the motif
-                    deviation = deviation_from_first_part
+                    deviation_temp = deviation
                     match_str_2 = ''
                     #flag to indicate state of match with gap
                     valid = True        
@@ -163,9 +162,9 @@ def find_motif(sequence, motif_list, penalty_list, max_deviation, minimum_gap, m
                         # If several possible characters
                         if isinstance(motif_list[motif_index], set):    
                             if window[window_index] not in motif_list[motif_index]:  
-                                deviation += int(penalty_list[motif_index]) 
+                                deviation_temp += int(penalty_list[motif_index]) 
                                 match_str_2 += 'X'
-                                if deviation > max_deviation:
+                                if deviation_temp > max_deviation:
                                     valid = False
                                     break
                             else:
@@ -173,18 +172,18 @@ def find_motif(sequence, motif_list, penalty_list, max_deviation, minimum_gap, m
                         # If one possible character 
                         else: 
                             if window[window_index] != motif_list[motif_index]:    
-                                deviation += int(penalty_list[motif_index]) 
+                                deviation_temp += int(penalty_list[motif_index]) 
                                 match_str_2 += 'X' 
                                 # If the deviation is larger than the max, break out of the loop
-                                if deviation > max_deviation:
+                                if deviation_temp > max_deviation:
                                     valid = False
                                     break
                             else:
                                 match_str_2 += window[window_index]
                         
                         # yield match if still valid match, correct length of match and acceptable deviation
-                        if valid and len(match_str_2) == len_part_2 and deviation <= max_deviation:
-                            yield((i, deviation, match_str_1 + "*" + match_str_2))           
+                        if valid and len(match_str_2) == len_part_2 and deviation_temp <= max_deviation:
+                            yield((i, deviation_temp, match_str_1 + "*" + match_str_2))           
 
             # If gap has been reached, the entire window has already been checked
             elif star_index is not None and j >= star_index:
