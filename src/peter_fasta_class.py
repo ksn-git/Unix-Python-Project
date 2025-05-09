@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 # Exercise 7-8
-# Peter's Fasta class
+# Peter's Fasta class and get_data_path 
+from functions import get_data_path
+
 
 class Fasta:
     # Alphabets, class variable
@@ -34,16 +36,18 @@ class Fasta:
             raise StopIteration
         return self.headers[self.pos-1], self.sequences[self.pos-1]
         
+<<<<<<< HEAD
     # O(n*m). Scales with the number of sequences and the number of lines in the sequences. 
     def load(self, filename):
+=======
+    def load(self, filename,subdir='data'):
+>>>>>>> 655c9df23d930d8eaae91f84caf3ff79d06b9f9b
         """Reads a fasta file by given filename and creates a list with headers and a list with sequences"""
         self.headers.clear()
         self.sequences.clear()
         self.uniqID.clear()
         # Ensure fasta file can be opened even if in a different folder
-        import os
-        project_path = os.path.abspath(os.path.join(os.path.dirname(__file__),'..'))        # path to unix_python_project folder
-        data_path = os.path.join(project_path,'data',filename)                              # path to whatever file to import from data folder
+        data_path = get_data_path(filename,subdir=subdir)
         # Open the file, not using try-except as I want the expection to propagate to main program.
         infile = open(data_path, 'r')
         for line in infile:
