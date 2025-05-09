@@ -240,6 +240,23 @@ def test_find_motif_exact_gap_match_lastframe():
         assert deviation == 0
         assert matched_sequence == 'TTG*TAT'
 
+#shows how precut window_size fails by giving only 1 match
+#test will fail!
+def test_find_motif_range_gap_match_lastframe():
+    sequence = 'TTGCCCCCCTATTTGCCCCCCTAT'
+    motif = ['T', 'T', 'G', '*', 'T', 'A', 'T']
+    penalty = [7, 8, 6, 0, 5, 5, 5] 
+    max_deviation = 0
+    minimum_gap = 5
+    maximum_gap = 7
+
+    matches = list(find_motif(sequence, motif, penalty, max_deviation, minimum_gap, maximum_gap))
+    assert len(matches) == 2
+    for match in matches:
+        position, deviation, matched_sequence = match
+        #assert position == 0
+        assert deviation == 0
+        assert matched_sequence == 'TTG*TAT'
         
 #Basic Functionality Test
 def test_find_motif_basic():
