@@ -34,6 +34,7 @@ class Fasta:
             raise StopIteration
         return self.headers[self.pos-1], self.sequences[self.pos-1]
         
+    # O(n*m). Scales with the number of sequences and the number of lines in the sequences. 
     def load(self, filename):
         """Reads a fasta file by given filename and creates a list with headers and a list with sequences"""
         self.headers.clear()
@@ -151,6 +152,7 @@ class Fasta:
             self.headers[position:position] = myheader
             self.sequences[position:position] = mysequence
 
+    # O(n). Scales with the number of sequences. Regex is assumed to be O(1).
     def verify(self, alphabet, start=None, end=None):
         import re
         if alphabet not in Fasta.alphabets:

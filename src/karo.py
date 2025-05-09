@@ -3,6 +3,7 @@ import sys, re, os
 from peter_fasta_class import Fasta
 from helper_module import get_data_path
 
+# O(1). Constant runtime as the same amount of input is always used. 
 # Getting filename with motif from command line
 if len(sys.argv) != 4:                              
     if len(sys.argv) == 1:
@@ -18,15 +19,20 @@ else:
     fasta_file = sys.argv[2]
     max_deviation = int(sys.argv[3])
 
+# Always one sequence file but the amount of entries and their length varies
 # Loading and verifying the fasta file 
 fasta = Fasta()
-fasta.load(fasta_file)                           
+# O(n*m), n = sequences, m = lines in the sequences.
+fasta.load(fasta_file)   
+# O(n), n = sequences.                        
 fasta.verify("dnax")     
 
 # Opening the motif description file. Works if the file is in a "data" subfolder. 
 # check if file exist is in helper_module 
+# O(1)
 motif_file = get_data_path(motif)     #this is the fasta file, I've added a reference file     
 
+# O(k), k = lines in the motif file. 
 def load_motif(motif_file):
     """ Returns a list of the motif and associated penalty scores as well as minimum and maximum number of gaps """
     # Arranging motif into two lists. Example output:
@@ -87,11 +93,15 @@ minimum_gap, maximum_gap = 0, 0
 motif_list, penalty_list, minimum_gap, maximum_gap = load_motif(motif_file)
 print(motif_list, penalty_list, max_deviation, minimum_gap, maximum_gap)
 
+# Runtime so far
+# O(1 + n*m + n + 1 + k) = O(n*m + n + k) = O(n*m + n), n = sequences, m = length of sequences
+# The number of lines in the motif file is assumed to be small compared to the number of sequences and their length.
 
 def find_motif(sequence, motif_list, penalty_list, max_deviation, minimum_gap, maximum_gap):
     """ Generator that searches for motif """
     """ Yields position, deviation and sequence when a match is found """
     """ Tries to make a match in each window until max deviation is reached """
+    # O(1)
     # Find start position of gap and length of 2nd part of the motif
     try:
         star_index = motif_list.index("*")      
@@ -101,6 +111,7 @@ def find_motif(sequence, motif_list, penalty_list, max_deviation, minimum_gap, m
         star_index = None
 
     # Start searching for matches
+    # O(m), m = sequence length. i will be increase the same amount as the sequence length.
     for i in range(0, len(sequence) - len(motif_list) - maximum_gap + 1):           # Search until the remaining seq is not long enough to be the motif
         # If no gaps in the motif, window is the same length as the motif
         if minimum_gap == 0 and maximum_gap == 0:
@@ -112,18 +123,21 @@ def find_motif(sequence, motif_list, penalty_list, max_deviation, minimum_gap, m
         # Reset deviation score and search window for motif
         deviation = 0
 
+        # O(j), j = motif length. j skips the gaps but is dependent on motif length.
         for j in range(len(window)):
             # If gap has been reached 
             # Check match for all gap sizes. Yield if below max deviation
             if j == star_index:
                 deviation_from_first_part = deviation
                 # Range of gaps
+                # O(k), k = gap range. Scales with the number of possible gap sizes.
                 for k in range(minimum_gap, maximum_gap + 1): # range should be the length of the 2nd part of the motif
                     # check match for the length of the 2nd part of the motif
                     deviation = deviation_from_first_part
                     if i == 784:
                         print("k",k)
                         print("deviation score", deviation)
+                    # O(j/2). Scales with the length of the 2nd part of the motif. I assume the first and second part are equal length
                     for m in range(k, k+len_part_2): # maybe minus 1
                         if i == 784:
                             print("m", m)
@@ -148,6 +162,7 @@ def find_motif(sequence, motif_list, penalty_list, max_deviation, minimum_gap, m
                                     break
                         
                         # After testing a gap, yield match if the deviation is below the max
+                        # O(k). Scales with the number of possible gap sizes since the check has to be done for each.
                         if m == k + len_part_2 - 1:
                             if deviation <= max_deviation:
                                 # Adjust the printed window to only show the matched part of the sequence
@@ -173,6 +188,7 @@ def find_motif(sequence, motif_list, penalty_list, max_deviation, minimum_gap, m
                         break
 
             # If one possible character
+            # O(j). Scales with the length of the motif as the comparison has to be done for each character in the motif.
             else:
                 if window[j] != motif_list[j]:
                     deviation += int(penalty_list[j])
@@ -185,12 +201,21 @@ def find_motif(sequence, motif_list, penalty_list, max_deviation, minimum_gap, m
             yield((i, deviation, window))                           # Return the position, deviation and match
 
 
+# O(n). Scales with number of sequences you put into find_motif. The actual runtime of find_motif is analyzed above.
 print("Matches are listed as (start position, penalty score, match)")
 print("The header corresponding to the match is printed immediately before the match")
 for header, sequence in fasta:
     for match in find_motif(sequence, motif_list, penalty_list, max_deviation, minimum_gap, maximum_gap):
         print(header)
         print(match)
+
+# Runtime for the entire program
+
+# O(n*m + 1 + m + j + k + j/2 + k + j + n) = O(n*m + m + j + k + n)
+# The number of gap sizes, k, is assumed to be very small compared to m, the length of sequences.
+# The same assumption is made for j, the length of the motif.
+# Final runtime is therefore: 
+# O(n*m + m + n)
 
 
 #for match in find_motif(fasta.sequences[1], motif_list, penalty_list, max_deviation):

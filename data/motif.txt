@@ -6,7 +6,7 @@ A	5
 C	5
 A	5
 # intervening unimportant bases
-*	17
+*	2-5
 # -10 element
 T	8
 A	8

@@ -29,7 +29,6 @@ fasta.verify("dnax")
 motif_file = get_data_path(motif)       
 # Load motif and save the function output
 motif_list, penalty_list, minimum_gap, maximum_gap = load_motif(motif_file)
-print(motif_list, penalty_list, minimum_gap, maximum_gap)
 
 #get matches using find_motif
 print("Matches are listed as (start position, penalty score, match)")
@@ -38,8 +37,4 @@ for header, sequence in fasta:
     for match in find_motif(sequence, motif_list, penalty_list, max_deviation, minimum_gap, maximum_gap):
         print(header)
         print(match)
-
-
-#for match in find_motif(fasta.sequences[1], motif_list, penalty_list, max_deviation):
-#        print(match)
 
