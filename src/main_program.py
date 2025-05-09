@@ -41,6 +41,7 @@ motif_list, penalty_list, minimum_gap, maximum_gap = load_motif(motif_file)
 #print(motif_list, penalty_list, minimum_gap, maximum_gap)      #debug statement
 
 #add matches into dict
+count = 0       #debug use
 output = {}
 for header,sequence in fasta:
     #add new fasta headers
@@ -49,6 +50,7 @@ for header,sequence in fasta:
     #append matches
     for match in find_motif(sequence, motif_list, penalty_list, max_deviation, minimum_gap, maximum_gap):
         output[header].append(match)
+        count += 1  #debug use
 
 #read headers and matches into file
 outputfile = get_data_path(save_as_file,subdir,must_exist = False)
@@ -68,6 +70,5 @@ with open(outputfile,'w') as outfile:
             print(f'({pos},{dev},{mstr})')              #print to terminal
 print(f'Output has been saved in: {save_as_file}')
 
-
-
-
+#debug statement to see number of matches
+print(count)
